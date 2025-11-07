@@ -26,6 +26,7 @@
   "build": {
     "appId": "com.being-glad.takeoutfixer",
     "productName": "Takeout Metadata Fixer",
+    "publish": "never",
     "mac": {
       "target": "dmg"
     },
