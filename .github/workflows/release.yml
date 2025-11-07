@@ -3,7 +3,9 @@ name: Build & Release
 on:
   push:
     branches:
-      - 'main' # Run on every push to the main branch
+      - 'main' # Run build jobs on every push to main
+    tags:
+      - 'v*.*.*' # Run release job ONLY on new tags
 
 jobs:
   # ------------------------------------
@@ -17,10 +19,10 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4 # Updated to v4
+        uses: actions/checkout@v4 # Updated from v3
 
       - name: Install Node.js
-        uses: actions/setup-node@v4 # Updated to v4
+        uses: actions/setup-node@v4 # Updated from v3
         with:
           node-version: '18'
 
@@ -32,7 +34,7 @@ jobs:
         run: npm run dist
 
       - name: Upload build artifact
-        # Updated to v4
+        # Updated from v3
         uses: actions/upload-artifact@v4 
         with:
           name: dist-${{ matrix.os }} # e.g., "dist-macos-latest"
@@ -50,7 +52,7 @@ jobs:
 
     steps:
       - name: Download all artifacts
-        # Updated to v4
+        # Updated from v3
         uses: actions/download-artifact@v4
         with:
           path: all-dist
@@ -62,7 +64,7 @@ jobs:
           find all-dist -type f -exec mv {} release-files \;
 
       - name: Create GitHub Release
-        # This is the same trusted action from before
+        # This is the trusted action that works
         uses: softprops/action-gh-release@v1
         with:
           # This uploads all files from the 'release-files' folder
