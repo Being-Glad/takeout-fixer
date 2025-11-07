@@ -6,9 +6,11 @@ on:
       - 'v*.*.*' # Run on new version tags
 
 jobs:
-  build-and-release:
+  # ------------------------------------
+  # STEP 1: Build on all 3 platforms
+  # ------------------------------------
+  build:
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
@@ -25,17 +27,41 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build/release application
-        # This builds the .exe, .dmg, etc. and puts them in a 'dist' folder
+      - name: Build application
+        # This will build the app for the OS it's running on
         run: npm run dist
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Release Assets
-        # This is the new, working action.
-        # It finds the release that triggered this workflow
-        # and uploads all files from the 'dist' folder to it.
+      - name: Upload build artifact
+        # This uploads the 'dist' folder (containing the .exe, .dmg, etc.)
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-${{ matrix.os }} # e.g., "dist-macos-latest"
+          path: dist/*
+
+  # ------------------------------------
+  # STEP 2: Create the GitHub Release
+  # ------------------------------------
+  release:
+    # This job only runs after all "build" jobs are successful
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all artifacts
+        # This downloads all the 'dist-*' folders
+        uses: actions/download-artifact@v3
+        with:
+          path: all-dist
+          
+      - name: Consolidate files
+        # This moves all .exe, .dmg, etc. into one 'release-files' folder
+        run: |
+          mkdir -p release-files
+          find all-dist -type f -exec mv {} release-files \;
+
+      - name: Create GitHub Release
+        # This is the same trusted action from before
         uses: softprops/action-gh-release@v1
         with:
-          # This tells the action to upload all files from the 'dist' directory
-          files: dist/*
+          # This uploads all files from the 'release-files' folder
+          files: release-files/*
