@@ -27,14 +27,18 @@
     "appId": "com.being-glad.takeoutfixer",
     "productName": "Takeout Metadata Fixer",
     "publish": null,
+    
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "artifactName": "Takeout-Metadata-Fixer${arch}.dmg"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "artifactName": "Takeout-Metadata-Fixer.exe"
     },
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "artifactName": "Takeout-Metadata-Fixer.AppImage"
     }
   }
 }
