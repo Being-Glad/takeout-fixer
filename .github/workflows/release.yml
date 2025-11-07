@@ -3,15 +3,15 @@ name: Build & Release
 on:
   push:
     tags:
-      - 'v*.*.*' # Run this workflow when a new version tag is pushed (e.g., v1.0.1)
+      - 'v*.*.*' # Run on new version tags
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
       - name: Check out Git repository
@@ -20,16 +20,26 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18' # Use a stable Node.js version
+          node-version: '18'
 
       - name: Install dependencies
         run: npm install
 
       - name: Build/release application
-        uses: samuelmeuli/action-electron-builder@v1
+        # This is the command that will build the .exe, .dmg, etc.
+        run: npm run dist
+        env:
+          # This is required for the builder to find your code
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts to release
+        # This action finds the built .exe, .dmg, etc. and attaches them to your v1.0.1 release
+        uses: sghpju/upload-artifact-to-release@v1
         with:
-          # GitHub token, automatically provided
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          # The command to run
-          release: true
-        # The 'env:' block has been removed, fixing the error.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repo: ${{ github.repository }}
+          tag: ${{ github.ref_name }}
+          # This finds all the installer files in the 'dist' folder
+          file-path: dist/*
+          # This will overwrite any old, failed artifacts
+          replace: true
