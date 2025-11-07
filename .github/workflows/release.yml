@@ -15,7 +15,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # This new 'include' block is the key
         include:
           - os: macos-latest
             os_target: mac
@@ -37,7 +36,6 @@ jobs:
         run: npm install
 
       - name: Build application
-        # This is the new, specific build command
         run: npx electron-builder --${{ matrix.os_target }}
 
       - name: Upload build artifact
@@ -54,6 +52,11 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
 
+    # THIS IS THE FIX:
+    # We must give the job write permissions to create the release
+    permissions:
+      contents: write # This is required by the release action
+    
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
