@@ -21,13 +21,12 @@
   },
   "devDependencies": {
     "electron": "^28.0.0",
-    "electron-builder": "^24.9.1",
-    "electron-publisher-never": "^2.0.0"
+    "electron-builder": "^24.9.1"
   },
   "build": {
     "appId": "com.being-glad.takeoutfixer",
     "productName": "Takeout Metadata Fixer",
-    "publish": "never",
+    "publish": null,
     "mac": {
       "target": "dmg"
     },
