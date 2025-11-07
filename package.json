@@ -28,7 +28,6 @@
     "productName": "Takeout Metadata Fixer",
     "mac": {
       "target": "dmg"
-      // The "arch" key that was here has been REMOVED. This is the fix.
     },
     "win": {
       "target": "nsis"
