@@ -1,0 +1,43 @@
+{
+  "name": "takeout-metadata-fixer",
+  "version": "1.0.0",
+  "description": "Fix Google Takeout photo and video metadata (EXIF, GPS, Dates)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "keywords": [
+    "google",
+    "takeout",
+    "exif",
+    "metadata",
+    "fixer"
+  ],
+  "author": "Being-Glad",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^28.0.0",
+    "exiftool-vendored": "^25.0.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.being-glad.takeoutfixer",
+    "productName": "Takeout Metadata Fixer",
+    "mac": {
+      "target": "dmg",
+      "arch": [
+        "x64",
+        "arm64"
+      ]
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}

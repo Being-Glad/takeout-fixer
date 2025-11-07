@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<!-- The <html> tag will get the 'dark' class -->
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Takeout Metadata Fixer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .drop-zone { border: 2px dashed #a0aec0; transition: all 0.2s; }
+        /* Blue "active" state for drop zone */
+        .drop-zone-active { border-color: #4f46e5; background-color: #eef2ff; }
+        /* Dark mode active drop zone */
+        .dark .drop-zone-active { border-color: #818cf8; background-color: #312e81; }
+        /* Prevent entire window from reacting to drag */
+        html, body { height: 100%; }
+        /* Styles for toggle button removed */
+    </style>
+</head>
+<!-- Apply the light gray background and center the content -->
+<body class="bg-gray-100 p-4 sm:p-8 h-full flex items-center justify-center dark:bg-gray-900">
+    <!-- This is the white "card" that sits on top -->
+    <div class="container max-w-4xl bg-white shadow-xl rounded-xl p-6 sm:p-10 dark:bg-gray-800 dark:shadow-none">
+        <header class="text-center mb-8 relative">
+            <!-- Dark Mode Toggle Button REMOVED -->
+            
+            <!-- Indigo Header -->
+            <h1 class="text-3xl sm:text-4xl font-bold text-indigo-600 mb-2 dark:text-indigo-400">Takeout Metadata Fixer</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300">Fix EXIF, GPS, and Dates for Google Takeout files.</p>
+            
+            <a href="https.buymeacoffee.com/Being_Glad" target="_blank" rel="noopener" class="mt-4 inline-block bg-yellow-400 text-gray-900 font-semibold px-4 py-2 rounded-lg hover:bg-yellow-500 transition">
+                ☕ Buy Me a Coffee
+            </a>
+        </header>
+
+        <section class="mb-8">
+            <div id="dropZone" class="drop-zone p-10 text-center rounded-lg cursor-pointer dark:border-gray-600">
+                <p class="text-gray-500 mb-4 dark:text-gray-400">Drag & drop your Takeout files or folders here</p>
+                <!-- Indigo Button -->
+                <button id="selectFilesBtn" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition shadow-md">
+                    Or Click to Select
+                </button>
+            </div>
+            <ul id="fileList" class="mt-4 text-sm text-gray-600 dark:text-gray-400">
+                <!-- Selected files/folders will be listed here -->
+            </ul>
+        </section>
+
+        <!-- Processing and Results -->
+        <div class="text-center mb-8">
+            <!-- Green "Fix" button (good for "go") -->
+            <button id="processButton" disabled class="bg-gray-400 text-white font-semibold px-8 py-4 rounded-xl text-xl shadow-lg transition disabled:opacity-50">
+                Fix Metadata
+            </button>
+        </div>
+
+        <!-- Status and Log Area -->
+        <div id="statusArea" class="hidden">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Processing Status</h2>
+            <div class="bg-gray-100 p-4 rounded-lg border border-gray-300 max-h-60 overflow-y-auto dark:bg-gray-900 dark:border-gray-700">
+                <div id="logArea" class="space-y-2 text-sm">
+                    <!-- Donation prompt will be prepended here -->
+                    <!-- Logs will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Dark Mode Initialization ---
+        const htmlEl = document.documentElement;
+        // This code block remains to apply the theme on load
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          htmlEl.classList.add('dark');
+        } else {
+          htmlEl.classList.remove('dark');
+        }
+        // The themeToggleBtn and its click listener have been removed.
+    
+        // --- Electron App Logic ---
+        const dropZone = document.getElementById('dropZone');
+        const selectFilesBtn = document.getElementById('selectFilesBtn');
+        const processButton = document.getElementById('processButton');
+        const fileList = document.getElementById('fileList');
+        const statusArea = document.getElementById('statusArea');
+        const logArea = document.getElementById('logArea');
+        let selectedFilePaths = [];
+
+        // --- Drag & Drop ---
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.add('drop-zone-active');
+        });
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.remove('drop-zone-active');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.remove('drop-zone-active');
+            const paths = Array.from(e.dataTransfer.files).map(f => f.path);
+            updateFilePaths(paths);
+        });
+        
+        // --- Button Clicks ---
+        selectFilesBtn.onclick = async () => {
+            const paths = await window.electron.openDialog();
+            if (paths.length > 0) updateFilePaths(paths);
+        };
+        
+        processButton.onclick = async () => {
+            log('Starting processing... This may take a while.', 'info');
+            processButton.disabled = true;
+            processButton.textContent = 'Processing...';
+
+            // Clear the log area of old results (and the old prompt)
+            logArea.innerHTML = '';
+
+            const results = await window.electron.processFiles(selectedFilePaths);
+
+            if (results.error) {
+                log(results.error, 'error');
+            } else {
+                log(`Processing complete! Fixed ${results.processed.length} files.`, 'success');
+                results.processed.forEach(msg => log(msg, 'success'));
+                results.skipped.forEach(msg => log(msg, 'warn'));
+
+                // Show donation prompt if successful
+                if (results.processed.length > 0) {
+                    showDonationPrompt();
+                }
+            }
+            processButton.textContent = 'Fix Metadata';
+            // We leave the button disabled after one run to prevent reprocessing
+        };
+
+        // --- UI Helpers ---
+        function updateFilePaths(paths) {
+            selectedFilePaths = paths;
+            fileList.innerHTML = '';
+            paths.forEach(p => {
+                const li = document.createElement('li');
+                li.textContent = p.split(/[\\/]/).pop(); // Show just the file/folder name
+                fileList.appendChild(li);
+            });
+            if (paths.length > 0) {
+                processButton.disabled = false;
+                processButton.classList.remove('bg-gray-400');
+                // Make the "Fix" button green
+                processButton.classList.add('bg-green-600', 'hover:bg-green-700');
+            }
+        }
+        
+        function log(message, type = 'info') {
+            statusArea.classList.remove('hidden');
+            const p = document.createElement('p');
+            let color = 'text-gray-700 dark:text-gray-300';
+            if (type === 'error') color = 'text-red-500 font-medium dark:text-red-400';
+            if (type === 'success') color = 'text-green-600 dark:text-green-400';
+            if (type === 'warn') color = 'text-yellow-600 dark:text-yellow-400';
+            p.className = `${color} break-words`;
+            p.textContent = message;
+            logArea.prepend(p); // Prepend to show newest logs first
+        }
+
+        /**
+         * Creates and prepends a non-blocking donation prompt to the log area.
+         */
+        function showDonationPrompt() {
+            const promptDiv = document.createElement('div');
+            // Added dark mode classes
+            promptDiv.className = "p-4 bg-yellow-50 border border-yellow-300 rounded-lg my-4 text-center shadow-sm dark:bg-gray-700 dark:border-yellow-700";
+            
+            promptDiv.innerHTML = `
+                <p class="font-semibold text-gray-800 text-lg dark:text-gray-100">Did this app just save you hours?</p>
+                <p class="text-gray-600 my-2 dark:text-gray-300">This app is 100% free and open-source. If you found it useful, please consider supporting its development!</p>
+                <a href="https://buymeacoffee.com/Being_Glad" target="_blank" rel="noopener" class="mt-2 inline-block bg-yellow-400 text-gray-900 font-semibold px-4 py-2 rounded-lg hover:bg-yellow-500 transition">
+                    ☕ Buy Me a Coffee
+                </a>
+            `;
+            
+            // Prepend to the log area so it's the first thing they see
+            logArea.prepend(promptDiv);
+        }
+    </script>
+</body>
+</html>
