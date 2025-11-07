@@ -32,7 +32,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           # The command to run
           release: true
-        env:
-          # ExifTool setup for the builder (very important)
-          # This tells the builder to download ExifTool so it works
-          INSTALL_EXIFTOOL: true
+        # The 'env:' block has been removed, fixing the error.

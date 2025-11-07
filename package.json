@@ -17,10 +17,10 @@
   "author": "Being-Glad",
   "license": "MIT",
   "dependencies": {
-    "electron": "^28.0.0",
     "exiftool-vendored": "^25.0.0"
   },
   "devDependencies": {
+    "electron": "^28.0.0",
     "electron-builder": "^24.9.1"
   },
   "build": {
