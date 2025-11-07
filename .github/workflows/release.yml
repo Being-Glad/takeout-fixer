@@ -26,20 +26,16 @@ jobs:
         run: npm install
 
       - name: Build/release application
-        # This is the command that will build the .exe, .dmg, etc.
+        # This builds the .exe, .dmg, etc. and puts them in a 'dist' folder
         run: npm run dist
         env:
-          # This is required for the builder to find your code
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload artifacts to release
-        # This action finds the built .exe, .dmg, etc. and attaches them to your v1.0.1 release
-        uses: sghpju/upload-artifact-to-release@v1
+      - name: Upload Release Assets
+        # This is the new, working action.
+        # It finds the release that triggered this workflow
+        # and uploads all files from the 'dist' folder to it.
+        uses: softprops/action-gh-release@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repo: ${{ github.repository }}
-          tag: ${{ github.ref_name }}
-          # This finds all the installer files in the 'dist' folder
-          file-path: dist/*
-          # This will overwrite any old, failed artifacts
-          replace: true
+          # This tells the action to upload all files from the 'dist' directory
+          files: dist/*
