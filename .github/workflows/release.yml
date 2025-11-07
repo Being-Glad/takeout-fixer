@@ -15,14 +15,21 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        # This new 'include' block is the key
+        include:
+          - os: macos-latest
+            os_target: mac
+          - os: ubuntu-latest
+            os_target: linux
+          - os: windows-latest
+            os_target: win
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4 # Updated from v3
+        uses: actions/checkout@v4
 
       - name: Install Node.js
-        uses: actions/setup-node@v4 # Updated from v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
 
@@ -30,42 +37,35 @@ jobs:
         run: npm install
 
       - name: Build application
-        # This will build the app for the OS it's running on
-        run: npm run dist
+        # This is the new, specific build command
+        run: npx electron-builder --${{ matrix.os_target }}
 
       - name: Upload build artifact
-        # Updated from v3
         uses: actions/upload-artifact@v4 
         with:
-          name: dist-${{ matrix.os }} # e.g., "dist-macos-latest"
+          name: dist-${{ matrix.os }} 
           path: dist/*
 
   # ------------------------------------
   # STEP 2: Create the GitHub Release
   # ------------------------------------
   release:
-    # This job only runs after all "build" jobs are successful
     needs: build
     runs-on: ubuntu-latest
-    # This 'if' statement is CRITICAL: it only runs if the push was a tag
     if: startsWith(github.ref, 'refs/tags/v')
 
     steps:
       - name: Download all artifacts
-        # Updated from v3
         uses: actions/download-artifact@v4
         with:
           path: all-dist
           
       - name: Consolidate files
-        # This moves all .exe, .dmg, etc. into one 'release-files' folder
         run: |
           mkdir -p release-files
           find all-dist -type f -exec mv {} release-files \;
 
       - name: Create GitHub Release
-        # This is the trusted action that works
         uses: softprops/action-gh-release@v1
         with:
-          # This uploads all files from the 'release-files' folder
           files: release-files/*
