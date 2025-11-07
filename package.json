@@ -27,11 +27,7 @@
     "appId": "com.being-glad.takeoutfixer",
     "productName": "Takeout Metadata Fixer",
     "mac": {
-      "target": "dmg",
-      "arch": [
-        "x64",
-        "arm64"
-      ]
+      "target": "dmg"
     },
     "win": {
       "target": "nsis"
