@@ -1,81 +1,40 @@
 name: Build & Release
-
 on:
   push:
-    branches:
-      - 'main' # Run build jobs on every push to main
-    tags:
-      - 'v*.*.*' # Run release job ONLY on new tags
-
+    branches: [ main ]
+    tags: [ 'v*.*.*' ]
 jobs:
-  # ------------------------------------
-  # STEP 1: Build on all 3 platforms
-  # ------------------------------------
   build:
+    name: build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: macos-latest
-            os_target: mac
-          - os: ubuntu-latest
-            os_target: linux
-          - os: windows-latest
-            os_target: win
-
+    strategy: { matrix: { os: [macos-latest, ubuntu-latest, windows-latest] } }
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v4
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build application
-        run: npx electron-builder --${{ matrix.os_target }}
-
-      # --- THIS STEP IS NOW FIXED ---
-      # It now only uploads the installers, not the entire dist folder.
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-${{ matrix.os }}
-          path: |
-            dist/*.dmg
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 18 }
+      - run: npm install
+      - name: Build
+        run: |
+          if [ "${{ matrix.os }}" == "macos-latest" ]; then npx electron-builder --mac --universal
+          elif [ "${{ matrix.os }}" == "windows-latest" ]; then npx electron-builder --win
+          else npx electron-builder --linux
+          fi
+        shell: bash
+      - uses: actions/upload-artifact@v4
+        with: { name: dist-${{ matrix.os }}, path: |
             dist/*.exe
+            dist/*.dmg
             dist/*.AppImage
-          if-no-files-found: error # Fail if the installer wasn't built
-
-  # ------------------------------------
-  # STEP 2: Create the GitHub Release
-  # ------------------------------------
+          , if-no-files-found: error }
   release:
     needs: build
-    runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
-    permissions:
-      contents: write
-    
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
     steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: all-dist
-          
-      # --- THIS STEP IS NOW FIXED ---
-      # It's now a simple, robust 'mv' command instead of 'find'.
-      - name: Consolidate files
-        run: |
-          mkdir -p release-files
-          mv all-dist/dist-macos-latest/*.dmg release-files/
-          mv all-dist/dist-windows-latest/*.exe release-files/
-          mv all-dist/dist-ubuntu-latest/*.AppImage release-files/
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: release-files/*
+      - uses: actions/download-artifact@v4
+        with: { path: all-dist }
+      - run: mkdir -p release-files && mv all-dist/**/* release-files/
+      - uses: softprops/action-gh-release@v2
+        with: { files: release-files/* }
+        env: { GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} }

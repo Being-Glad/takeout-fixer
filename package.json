@@ -1,44 +1,22 @@
 {
-  "name": "takeout-metadata-fixer",
+  "name": "takeout-date-fixer",
+  "productName": "Takeout Date Fixer",
   "version": "1.0.0",
-  "description": "Fix Google Takeout photo and video metadata (EXIF, GPS, Dates)",
+  "description": "Restore EXIF dates and metadata to Google Takeout photos.",
   "main": "main.js",
-  "scripts": {
-    "start": "electron .",
-    "dist": "electron-builder"
-  },
-  "keywords": [
-    "google",
-    "takeout",
-    "exif",
-    "metadata",
-    "fixer"
-  ],
-  "author": "Being-Glad",
+  "scripts": { "start": "electron .", "dist": "electron-builder" },
+  "author": "Being_Glad",
   "license": "MIT",
-  "dependencies": {
-    "exiftool-vendored": "^25.0.0"
-  },
-  "devDependencies": {
-    "electron": "^28.0.0",
-    "electron-builder": "^24.9.1"
-  },
+  "devDependencies": { "electron": "^28.0.0", "electron-builder": "^24.9.0" },
+  "dependencies": { "exiftool-vendored": "^25.0.0" },
   "build": {
-    "appId": "com.being-glad.takeoutfixer",
-    "productName": "Takeout Metadata Fixer",
+    "appId": "com.takeout.datefixer",
+    "productName": "Takeout Date Fixer",
     "publish": null,
-    
-    "mac": {
-      "target": "dmg",
-      "artifactName": "Takeout-Metadata-Fixer${arch}.dmg"
-    },
-    "win": {
-      "target": "nsis",
-      "artifactName": "Takeout-Metadata-Fixer.exe"
-    },
-    "linux": {
-      "target": "AppImage",
-      "artifactName": "Takeout-Metadata-Fixer.AppImage"
-    }
+    "directories": { "buildResources": "assets" },
+    "files": [ "**/*", "!dist", "!node_modules/.cache" ],
+    "mac": { "target": "dmg", "artifactName": "Takeout-Date-Fixer.dmg" },
+    "win": { "target": "nsis", "artifactName": "Takeout-Date-Fixer.exe" },
+    "linux": { "target": "AppImage", "category": "Utility", "artifactName": "Takeout-Date-Fixer.AppImage" }
   }
 }
