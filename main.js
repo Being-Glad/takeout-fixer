@@ -1,66 +1,190 @@
-const { app, BrowserWindow, ipcMain, dialog, shell, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const { exiftool } = require('exiftool-vendored');
+// Use a singleton instance of exiftool for better performance
+const exiftool = require('exiftool-vendored').exiftool;
 
 let mainWindow;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 900, height: 700, minWidth: 800, minHeight: 600, backgroundColor: '#030712', titleBarStyle: 'hiddenInset',
-        webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false }
+        width: 900,
+        height: 700,
+        minWidth: 800,
+        minHeight: 600,
+        backgroundColor: '#09090b',
+        titleBarStyle: 'hidden',   // Hides native title bar
+        titleBarOverlay: {
+             color: '#09090b',     // Matches Mac traffic light area background
+             symbolColor: '#ffffff',
+             height: 45
+        },
+        webPreferences: {
+            preload: path.join(__dirname, 'preload.js'),
+            contextIsolation: true,
+            nodeIntegration: false,
+            sandbox: false // Required for some exiftool operations
+        },
+        icon: path.join(__dirname, 'build/icon.png')
     });
-    if (process.platform !== 'darwin') mainWindow.setMenuBarVisibility(false);
+
+    // Mac-specific: Force dock icon
+    if (process.platform === 'darwin') {
+        app.dock.setIcon(path.join(__dirname, 'build/icon.png'));
+    }
+
+    // Windows/Linux: Hide old-style menu bar
+    if (process.platform !== 'darwin') {
+        mainWindow.setMenuBarVisibility(false);
+    }
+
     mainWindow.loadFile('app.html');
-    mainWindow.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
 }
+
 app.whenReady().then(createWindow);
-app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
-ipcMain.handle('open-dialog', async () => { const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, { properties: ['openFile', 'openDirectory', 'multiSelections'] }); return canceled ? null : filePaths; });
-ipcMain.on('open-external', (event, url) => shell.openExternal(url));
-ipcMain.on('start-process', async (event, paths) => {
-    const sendLog = (m, t='info') => mainWindow.webContents.send('log', m, t);
-    let mediaFiles = [], jsonFiles = new Map();
-    function scanDir(dir) {
-        try {
-            fs.readdirSync(dir).forEach(f => {
-                const full = path.join(dir, f), stat = fs.statSync(full);
-                if (stat.isDirectory()) scanDir(full);
-                else {
-                    const ext = path.extname(f).toLowerCase();
-                    if (ext === '.json') jsonFiles.set(normalize(f), { path: full, name: f });
-                    else if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.mov', '.mp4'].includes(ext)) mediaFiles.push({ path: full, name: f });
-                }
-            });
-        } catch (e) { sendLog(`Scan error: ${e.message}`, 'error'); }
-    }
-    paths.forEach(p => fs.statSync(p).isDirectory() ? scanDir(p) : null);
-    sendLog(`Found ${mediaFiles.length} media, ${jsonFiles.size} JSON files.`);
-    let processed = 0, errors = 0;
-    for (const media of mediaFiles) {
-        try {
-            const key = normalize(media.name);
-            let metadata = jsonFiles.get(key);
-            if (!metadata) { const base = key.substring(0, key.lastIndexOf('.')); for (const [k, v] of jsonFiles) if (k.startsWith(base)) { metadata = v; break; } }
-            let date = null, tags = {};
-            if (metadata) {
-                const data = JSON.parse(fs.readFileSync(metadata.path, 'utf8')), ts = data.photoTakenTime?.timestamp || data.creationTime?.timestamp;
-                if (ts) date = new Date(parseInt(ts) * 1000).toISOString();
-                if (data.geoData?.latitude) { tags.GPSLatitude = data.geoData.latitude; tags.GPSLongitude = data.geoData.longitude; }
-                if (data.description) tags.ImageDescription = data.description;
-            } else {
-                const m = media.name.match(/(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/);
-                if (m) date = new Date(Date.UTC(m[1], m[2]-1, m[3], m[4], m[5], m[6])).toISOString();
-            }
-            if (date) {
-                tags.AllDates = date;
-                await exiftool.write(media.path, tags, ['-overwrite_original']);
-                const time = new Date(date); fs.utimesSync(media.path, time, time);
-            } else { errors++; sendLog(`No date for ${media.name}`, 'warn'); }
-        } catch (e) { errors++; sendLog(`Failed ${media.name}: ${e.message}`, 'error'); }
-        mainWindow.webContents.send('progress', ++processed, mediaFiles.length);
-    }
-    mainWindow.webContents.send('complete', { total: mediaFiles.length, errors });
-    exiftool.end();
+
+// Proper cleanup on exit
+app.on('window-all-closed', () => {
+    exiftool.end(); // Critical: kills the perl process
+    if (process.platform !== 'darwin') app.quit();
 });
-function normalize(n) { return n.toLowerCase().replace(/\(\d+\)/g, '').replace(/_\d{13}|-collage|-cinematic/g, ''); }
+
+ipcMain.handle('open-dialog', async () => {
+    const result = await dialog.showOpenDialog(mainWindow, {
+        properties: ['openDirectory', 'multiSelections']
+    });
+    return result.filePaths;
+});
+
+ipcMain.on('start-processing', async (event, paths) => {
+    const sender = event.sender;
+    // Helper to send logs to UI
+    const sendLog = (msg, type = 'info') => sender.send('log-message', msg, type);
+
+    sendLog('Starting deeper analysis...');
+    let mediaFiles = [];
+    let jsonMap = new Map();
+
+    // 1. Recursive Scan Function
+    async function scanDir(dir) {
+        try {
+            const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+            for (const entry of entries) {
+                const fullPath = path.join(dir, entry.name);
+                if (entry.isDirectory()) {
+                    await scanDir(fullPath);
+                } else {
+                    const ext = path.extname(entry.name).toLowerCase();
+                    if (ext === '.json') {
+                        // Read JSON metadata
+                        try {
+                            const data = JSON.parse(await fs.promises.readFile(fullPath, 'utf8'));
+                            // Look for standard Google Takeout timestamp fields
+                            const timestamp = data.photoTakenTime?.timestamp || data.creationTime?.timestamp;
+                            if (timestamp) {
+                                // Store metadata mapped to the file path (normalized)
+                                jsonMap.set(normalizePath(fullPath), {
+                                    timestamp: parseInt(timestamp),
+                                    title: data.title,
+                                    description: data.description,
+                                    gps: data.geoData
+                                });
+                            }
+                        } catch (e) {
+                            // Ignore unreadable/bad JSONs silently
+                        }
+                    } else if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.mov', '.mp4', '.avi', '.mkv'].includes(ext)) {
+                        mediaFiles.push(fullPath);
+                    }
+                }
+            }
+        } catch (err) {
+            sendLog(`Could not scan directory: ${dir}`, 'error');
+        }
+    }
+
+    // Helper to normalize paths for matching (removes .json, handles duplicates like (1))
+    function normalizePath(filePath) {
+        const dir = path.dirname(filePath);
+        const name = path.basename(filePath);
+        return path.join(dir, name.toLowerCase().replace(/\.json$/, '').replace(/\(\d+\)/, '').trim());
+    }
+
+    // 2. Start Scanning
+    for (const p of paths) {
+        if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
+            await scanDir(p);
+        }
+    }
+
+    sendLog(`Found ${mediaFiles.length} media files. Starting fix process...`);
+    sender.send('progress-update', { total: mediaFiles.length, current: 0 });
+
+    let fixed = 0, skipped = 0;
+
+    // 3. Process Files
+    for (let i = 0; i < mediaFiles.length; i++) {
+        const filePath = mediaFiles[i];
+        const normalized = normalizePath(filePath);
+        // Try exact match first, then try matching without extension (common for some Takeout files)
+        let metadata = jsonMap.get(normalized) || jsonMap.get(normalized.substring(0, normalized.lastIndexOf('.')));
+
+        if (metadata) {
+             // Inform user *before* starting a potentially long write operation
+            if (i % 5 === 0 || fs.statSync(filePath).size > 100 * 1024 * 1024) { // Log every 5th file OR any file > 100MB
+                 sendLog(`Processing: ${path.basename(filePath)}...`);
+            }
+
+            try {
+                // Format date for ExifTool (YYYY:MM:DD HH:mm:ss)
+                const dateStr = new Date(metadata.timestamp * 1000).toISOString().replace(/\.\d{3}Z$/, '').replace(/[-:]/g, ':').replace('T', ' ');
+
+                // Prepare tags to write
+                let tags = {
+                    AllDates: dateStr,
+                    FileModifyDate: dateStr,
+                    FileCreateDate: dateStr
+                };
+
+                // Add GPS if available
+                if (metadata.gps && (metadata.gps.latitude || metadata.gps.longitude)) {
+                    tags.GPSLatitude = metadata.gps.latitude;
+                    tags.GPSLongitude = metadata.gps.longitude;
+                    tags.GPSAltitude = metadata.gps.altitude;
+                }
+                // Add Description/Caption if available
+                if (metadata.description) {
+                    tags.ImageDescription = metadata.description;
+                    tags['Caption-Abstract'] = metadata.description;
+                }
+                // Add Title if available
+                if (metadata.title) {
+                    tags.Title = metadata.title;
+                }
+
+                // Write data using ExifTool (overwrite_original prevents _original backup files)
+                await exiftool.write(filePath, tags, ['-overwrite_original']);
+
+                // Also update file system timestamps explicitly as a backup
+                const utime = metadata.timestamp;
+                await fs.promises.utimes(filePath, utime, utime);
+
+                fixed++;
+            } catch (e) {
+                sendLog(`Failed to fix ${path.basename(filePath)}: ${e.message}`, 'error');
+                skipped++;
+            }
+        } else {
+            skipped++;
+             // Only log missing metadata occasionally to avoid spamming log
+             if (skipped < 10 || skipped % 50 === 0) {
+                 sendLog(`No JSON found for: ${path.basename(filePath)}`, 'warn');
+             }
+        }
+        // Update progress bar
+        sender.send('progress-update', { total: mediaFiles.length, current: i + 1 });
+    }
+
+    sendLog('Finalizing...', 'success');
+    sender.send('process-complete', { fixed, skipped });
+});

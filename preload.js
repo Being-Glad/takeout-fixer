@@ -1,9 +1,11 @@
 const { contextBridge, ipcRenderer } = require('electron');
+
 contextBridge.exposeInMainWorld('electron', {
+    // Expose the platform (darwin = mac, win32 = windows, linux = linux)
+    platform: process.platform,
     openDialog: () => ipcRenderer.invoke('open-dialog'),
-    startProcess: (p) => ipcRenderer.send('start-process', p),
-    onLog: (cb) => ipcRenderer.on('log', (e, m, t) => cb(m, t)),
-    onProgress: (cb) => ipcRenderer.on('progress', (e, c, t) => cb(c, t)),
-    onComplete: (cb) => ipcRenderer.on('complete', (e, s) => cb(s)),
-    openExternal: (u) => ipcRenderer.send('open-external', u)
+    startProcessing: (paths) => ipcRenderer.send('start-processing', paths),
+    onLog: (callback) => ipcRenderer.on('log-message', (event, msg, type) => callback(msg, type)),
+    onComplete: (callback) => ipcRenderer.on('process-complete', (event, stats) => callback(stats)),
+    onProgress: (callback) => ipcRenderer.on('progress-update', (event, data) => callback(data))
 });
