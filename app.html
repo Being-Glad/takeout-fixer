@@ -3,58 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;">
     <title>Takeout Date Fixer</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config={darkMode:'class',theme:{extend:{colors:{indigo:{400:'#818cf8',500:'#6366f1',600:'#4f46e5',700:'#4338ca'},gray:{800:'#1f2937',900:'#111827'}}}}}</script>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');body{font-family:'Inter',sans-serif;user-select:none}.draggable{-webkit-app-region:drag}.non-draggable{-webkit-app-region:no-drag}::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#111827}::-webkit-scrollbar-thumb{background:#374151;border-radius:4px}::-webkit-scrollbar-thumb:hover{background:#4b5563}.accordion-content{max-height:0;overflow:hidden;transition:max-height 0.3s ease-out}.accordion-open .accordion-content{max-height:600px}.rotate-icon{transition:transform 0.3s ease}.accordion-open .rotate-icon{transform:rotate(180deg)}</style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        indigo: { 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
+                        purple: { 400: '#c084fc', 500: '#a855f7', 600: '#9333ea' },
+                        gray: { 800: '#1f2937', 900: '#111827', 950: '#09090b' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; user-select: none; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111827; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        .drop-zone { border: 2px dashed #374151; transition: all 0.2s; }
+        .drop-zone.active { border-color: #818cf8; background-color: rgba(99, 102, 241, 0.1); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .accordion-open .accordion-content { max-height: 400px; }
+        .rotate-icon { transition: transform 0.3s ease; }
+        .accordion-open .rotate-icon { transform: rotate(180deg); }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body class="bg-gray-950 text-gray-100 h-screen flex flex-col overflow-hidden">
-    <div class="draggable bg-gray-900 py-3 px-4 flex items-center justify-between border-b border-gray-800">
-         <div class="flex items-center">
-            <svg class="h-6 w-6 mr-3" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="20" fill="#18181b"/><rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/><rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/><rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/></svg>
-            <span class="font-semibold text-gray-200">Takeout Date Fixer</span>
+
+    <!-- App Header (Draggable) -->
+    <header class="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 px-6 py-4 flex items-center justify-between flex-shrink-0" style="-webkit-app-region: drag">
+        <div class="flex items-center">
+            <!-- The "Module" Logo -->
+            <svg class="h-6 w-6 mr-3" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100" height="100" rx="20" fill="#18181b"/>
+                <rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/>
+                <rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/>
+                <rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/>
+            </svg>
+            <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">Takeout Date Fixer</h1>
         </div>
-    </div>
-    <div class="flex-1 overflow-y-auto p-6">
-        <div class="max-w-2xl mx-auto space-y-6">
-            <div class="text-center py-4">
-                <svg class="h-20 w-20 mx-auto mb-4" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="20" fill="#18181b"/><rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/><rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/><rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/></svg>
-                <h1 class="text-3xl font-bold text-white">Restoring Your Digital Life</h1>
-                <p class="text-gray-400 mt-2">Permanently fix EXIF timestamps, GPS, and descriptions.</p>
-            </div>
-            <div id="upload-card" class="bg-gray-900 rounded-xl border-2 border-dashed border-gray-700 p-10 text-center hover:border-indigo-500/50 transition cursor-pointer group">
-                 <div class="pointer-events-none space-y-4">
-                    <svg class="mx-auto h-16 w-16 text-gray-600 group-hover:text-indigo-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                     <div class="text-xl text-gray-300">Drag folders or files here</div>
-                     <button id="selectBtn" class="non-draggable px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition">Or Select Files</button>
+        <div class="text-xs font-medium text-indigo-400 bg-indigo-400/10 px-2 py-1 rounded-md border border-indigo-400/20">
+            PRO
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto">
+        <div class="max-w-3xl mx-auto p-6 space-y-8">
+
+            <!-- Upload Zone -->
+            <div id="drop-zone" class="drop-zone rounded-2xl p-12 text-center cursor-pointer hover:bg-gray-900 transition group bg-gray-900/30">
+                 <div class="space-y-5 pointer-events-none">
+                    <svg class="mx-auto h-16 w-16 text-gray-600 group-hover:text-indigo-400 transition duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                    <div>
+                        <p class="text-gray-300 text-xl font-medium"><span class="text-indigo-400 font-semibold">Click to select</span> or drag folder here</p>
+                        <p class="text-gray-500 mt-2 text-sm">Supports unzipped Google Takeout folders of any size.</p>
+                    </div>
+                    <button id="select-files-btn" class="pointer-events-auto px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition shadow-lg shadow-indigo-500/20">
+                        Browse Files
+                    </button>
                 </div>
             </div>
-            <div id="results-card" class="hidden bg-gray-900 rounded-xl border border-gray-800 p-6 space-y-6">
-                 <div class="flex items-center"><div id="status-icon" class="h-3 w-3 bg-yellow-500 rounded-full animate-pulse mr-3"></div><h3 id="status-text" class="text-lg font-medium text-white">Processing...</h3></div>
-                <div class="w-full bg-gray-800 rounded-full h-2.5 overflow-hidden"><div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div></div>
-                <div class="flex justify-between text-sm text-gray-500"><span id="progress-count">0 / 0</span><span id="progress-percent">0%</span></div>
-                <div id="donation-area" class="hidden bg-indigo-900/20 border border-indigo-900/50 rounded-lg p-4 flex items-center justify-between">
-                    <div class="flex items-center"><span class="text-2xl mr-3">☕</span><p class="text-indigo-200 text-sm">Happy with the results? Support future updates!</p></div>
-                    <button onclick="window.electron.openExternal('https://buymeacoffee.com/Being_Glad')" class="non-draggable bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2 px-4 rounded-md transition">Donate</button>
+
+            <!-- Processing Status (Hidden initially) -->
+            <div id="status-section" class="hidden space-y-6 animate-fade-in">
+                <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 flex items-center justify-between shadow-2xl">
+                    <div>
+                        <h3 class="text-lg font-semibold text-white" id="status-title">Processing...</h3>
+                        <p class="text-sm text-gray-400 mt-1" id="status-text">Analyzing your files. This may take a while.</p>
+                    </div>
+                     <svg id="spinner" class="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                     <svg id="success-icon" class="hidden h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </div>
             </div>
-             <div id="log-accordion" class="border border-gray-800 rounded-lg overflow-hidden hidden">
-                <button id="log-toggle" class="non-draggable w-full px-4 py-3 bg-gray-900 flex justify-between items-center text-left text-sm font-medium text-gray-300 hover:bg-gray-800 transition"><span>Show Detailed Log</span><svg class="rotate-icon h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                    <div id="log-content" class="accordion-content bg-black"><div id="log" class="p-4 font-mono text-xs text-gray-400 h-64 overflow-y-auto select-text"></div></div>
+
+            <!-- Log Accordion -->
+            <div id="log-accordion" class="border border-gray-800 rounded-xl overflow-hidden hidden shadow-sm">
+                <button id="log-toggle" class="w-full px-6 py-3 bg-gray-900 hover:bg-gray-800 transition flex justify-between items-center text-left font-medium text-sm text-gray-300">
+                    <span>Show Processing Log</span>
+                    <svg class="rotate-icon h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                </button>
+                 <div id="log-content" class="accordion-content bg-black"><div id="processing-log" class="p-6 font-mono text-xs text-gray-500 h-64 overflow-y-auto leading-relaxed"></div></div>
             </div>
+
+             <!-- Features Grid (Fills the empty space) -->
+            <div class="pt-8 border-t border-gray-800/50">
+                <h3 class="text-center text-sm font-semibold text-gray-500 uppercase tracking-wider mb-8">Pro Features Active</h3>
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="text-center space-y-3">
+                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-xl bg-indigo-900/50 text-indigo-400">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h4 class="text-gray-200 font-medium text-sm">EXIF Timestamps</h4>
+                        <p class="text-gray-500 text-xs">Permanent date correction</p>
+                    </div>
+                    <div class="text-center space-y-3">
+                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-xl bg-indigo-900/50 text-indigo-400">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        </div>
+                        <h4 class="text-gray-200 font-medium text-sm">GPS Data</h4>
+                        <p class="text-gray-500 text-xs">Restores lost locations</p>
+                    </div>
+                    <div class="text-center space-y-3">
+                         <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-xl bg-indigo-900/50 text-indigo-400">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        </div>
+                        <h4 class="text-gray-200 font-medium text-sm">Full Quality</h4>
+                        <p class="text-gray-500 text-xs">Zero compression</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 text-center text-gray-600 text-xs border-t border-gray-900 bg-gray-950 flex-shrink-0">
+        <p>v1.0.0 • 100% Free & Open Source</p>
+    </footer>
+
     <script>
-        const u=document.getElementById('upload-card'),r=document.getElementById('results-card'),st=document.getElementById('status-text'),si=document.getElementById('status-icon'),pb=document.getElementById('progress-bar'),pc=document.getElementById('progress-count'),pp=document.getElementById('progress-percent'),ld=document.getElementById('log'),la=document.getElementById('log-accordion'),lt=document.getElementById('log-toggle'),da=document.getElementById('donation-area');
-        lt.addEventListener('click',()=>{la.classList.toggle('accordion-open');lt.querySelector('span').textContent=la.classList.contains('accordion-open')?'Hide Detailed Log':'Show Detailed Log'});
-        document.getElementById('selectBtn').onclick=async()=>{const p=await window.electron.openDialog();if(p&&p.length>0)start(p)};
-        u.ondragover=(e)=>{e.preventDefault();u.classList.add('border-indigo-500');return false};u.ondragleave=()=>{u.classList.remove('border-indigo-500');return false};
-        u.ondrop=(e)=>{e.preventDefault();u.classList.remove('border-indigo-500');const p=Array.from(e.dataTransfer.files).map(f=>f.path);if(p.length>0)start(p)};
-        function start(p){u.classList.add('hidden');r.classList.remove('hidden');la.classList.remove('hidden');if(!la.classList.contains('accordion-open'))lt.click();st.textContent='Scanning files...';ld.innerHTML='';window.electron.startProcess(p)}
-        window.electron.onLog((m,t='info')=>{const p=document.createElement('p');p.className=t==='error'?'text-red-400':t==='success'?'text-green-400':t==='warn'?'text-yellow-400':'text-gray-500';p.textContent=`[${new Date().toLocaleTimeString()}] ${m}`;ld.prepend(p)});
-        window.electron.onProgress((c,t)=>{const p=Math.round((c/t)*100);pb.style.width=`${p}%`;pc.textContent=`${c} / ${t}`;pp.textContent=`${p}%`;st.textContent=`Processing... (${p}%)`});
-        window.electron.onComplete((s)=>{st.textContent='Complete!';si.classList.remove('bg-yellow-500','animate-pulse');si.classList.add('bg-green-500');pb.classList.add('bg-green-500');da.classList.remove('hidden');if(s.errors===0&&la.classList.contains('accordion-open'))lt.click()});
+        const selectFilesBtn = document.getElementById('select-files-btn');
+        const dropZone = document.getElementById('drop-zone');
+        const statusSection = document.getElementById('status-section');
+        const statusTitle = document.getElementById('status-title');
+        const statusText = document.getElementById('status-text');
+        const spinner = document.getElementById('spinner');
+        const successIcon = document.getElementById('success-icon');
+        const logContainer = document.getElementById('processing-log');
+        const logAccordion = document.getElementById('log-accordion');
+        const logToggle = document.getElementById('log-toggle');
+
+        logToggle.addEventListener('click', () => {
+            logAccordion.classList.toggle('accordion-open');
+            logToggle.querySelector('span').textContent = logAccordion.classList.contains('accordion-open') ? 'Hide Processing Log' : 'Show Processing Log';
+        });
+
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); dropZone.classList.add('active'); });
+        dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('active'); });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('active');
+             let paths = [];
+             if (e.dataTransfer.files.length > 0) {
+                 for (let i = 0; i < e.dataTransfer.files.length; i++) { paths.push(e.dataTransfer.files[i].path); }
+                 startProcessing(paths);
+             }
+        });
+
+        selectFilesBtn.onclick = async () => {
+            const paths = await window.electron.openDialog();
+            if (paths && paths.length > 0) startProcessing(paths);
+        };
+
+        function startProcessing(paths) {
+            statusSection.classList.remove('hidden');
+            dropZone.classList.add('opacity-50', 'pointer-events-none');
+            statusTitle.textContent = 'Processing...';
+            statusText.textContent = 'Analyzing your files. This may take a while.';
+            spinner.classList.remove('hidden');
+            successIcon.classList.add('hidden');
+            logContainer.innerHTML = '';
+            logAccordion.classList.remove('hidden');
+            if (!logAccordion.classList.contains('accordion-open')) logToggle.click();
+            window.electron.startProcessing(paths);
+        }
+
+        window.electron.onLog((message, type = 'info') => {
+            const p = document.createElement('p');
+            p.className = type === 'error' ? 'text-red-400 font-bold' : type === 'success' ? 'text-green-400 font-bold' : type === 'warn' ? 'text-yellow-400' : 'text-gray-400';
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.prepend(p);
+        });
+
+        window.electron.onComplete((stats) => {
+            spinner.classList.add('hidden');
+            successIcon.classList.remove('hidden');
+            statusTitle.textContent = 'Processing Complete!';
+            statusText.textContent = `Success! Fixed ${stats.fixed} files. Skipped ${stats.skipped}.`;
+            dropZone.classList.remove('opacity-50', 'pointer-events-none');
+            setTimeout(() => { if (logAccordion.classList.contains('accordion-open')) logToggle.click(); }, 1500);
+            showDonationPrompt();
+        });
+
+        function showDonationPrompt() {
+            if (document.getElementById('donation-prompt')) return;
+            const prompt = document.createElement('div');
+            prompt.id = 'donation-prompt';
+            prompt.className = "bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border border-yellow-700/30 rounded-xl p-6 mb-6 flex flex-col sm:flex-row items-center justify-between gap-6 animate-fade-in";
+            prompt.innerHTML = `
+                <div class="flex items-center"><span class="text-3xl mr-4">☕</span><div><h4 class="text-white font-semibold">Saved you time?</h4><p class="text-yellow-200/80 text-sm">Consider supporting future development to keep this tool free forever.</p></div></div>
+                <a href="https://buymeacoffee.com/Being_Glad" target="_blank" class="whitespace-nowrap bg-yellow-600 hover:bg-yellow-500 text-white font-semibold py-3 px-6 rounded-xl transition shadow-md">Fuel Future Development</a>
+            `;
+            logContainer.parentElement.parentElement.before(prompt);
+        }
     </script>
 </body>
 </html>
