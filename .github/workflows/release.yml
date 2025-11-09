@@ -3,60 +3,66 @@ name: Build & Release
 on:
   push:
     branches: [ main ]
-    tags:
-      - 'v*.*.*'
-
-permissions:
-  contents: write
+    tags: [ 'v*.*.*' ]
 
 jobs:
   build:
-    name: build (${{ matrix.os }})
+    name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        include:
+          - os: macos-latest
+            build_cmd: --mac
+            artifact_name: Takeout-Date-Fixer.dmg
+          - os: ubuntu-latest
+            build_cmd: --linux
+            artifact_name: Takeout-Date-Fixer.AppImage
+          - os: windows-latest
+            build_cmd: --windows
+            artifact_name: Takeout-Date-Fixer.exe
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
-      - run: npm install
-      - name: Build
-        run: |
-          if [ "${{ matrix.os }}" == "macos-latest" ]; then
-            npx electron-builder --mac --universal
-          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
-            npx electron-builder --win
-          else
-            npx electron-builder --linux
-          fi
-        shell: bash
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build application
+        run: npx electron-builder ${{ matrix.build_cmd }}
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dist-${{ matrix.os }}
-          path: |
-            dist/*.exe
-            dist/*.dmg
-            dist/*.AppImage
-          if-no-files-found: error
+          name: ${{ matrix.artifact_name }}
+          path: dist/${{ matrix.artifact_name }}
 
   release:
+    name: Release
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
         with:
-          path: all-dist
-      - name: Consolidate files
-        run: |
-          mkdir -p release-files
-          find all-dist -type f \( -name "*.exe" -o -name "*.dmg" -o -name "*.AppImage" \) -exec mv {} release-files/ \;
+          path: artifacts/
+          merge-multiple: true 
+
+      - name: List files
+        run: ls -R artifacts/
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: release-files/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          files: artifacts/*

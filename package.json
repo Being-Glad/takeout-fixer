@@ -28,12 +28,11 @@
   "build": {
     "appId": "com.beingglad.takeoutdatefixer",
     "productName": "Takeout Date Fixer",
-    "artifactName": "${productName}.${ext}",
-    "directories": {
-      "buildResources": "build"
-    },
+    "artifactName": "Takeout-Date-Fixer.${ext}",
+    "publish": null,
     "files": [
       "**/*",
+      "build/icon.png",
       "!**/node_modules/*/{CHANGELOG.md,README.md,README,LICENSE,LICENSE.txt}",
       "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
       "!.editorconfig",
@@ -43,7 +42,11 @@
     "mac": {
       "target": "dmg",
       "icon": "build/icon.icns",
-      "category": "public.app-category.photography"
+      "category": "public.app-category.photography",
+      "arch": [
+        "x64",
+        "arm64"
+      ]
     },
     "win": {
       "target": "nsis",
@@ -59,7 +62,6 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
-    },
-    "publish": null
+    }
   }
 }
