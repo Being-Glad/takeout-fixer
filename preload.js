@@ -11,4 +11,4 @@ contextBridge.exposeInMainWorld('electron', {
     onProgress: (callback) => ipcRenderer.on('update-progress', (event, current, total) => callback(current, total)),
     onLog: (callback) => ipcRenderer.on('add-log', (event, msg, type) => callback(msg, type)),
     onComplete: (callback) => ipcRenderer.on('processing-complete', (event, stats) => callback(stats))
-});
+}); 

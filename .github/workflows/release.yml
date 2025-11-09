@@ -27,7 +27,8 @@ jobs:
         run: npm install
 
       - name: Build application
-        # Corrected 'if' statements and added env for Mac
+        # Specify 'shell: bash' to make the if/then syntax work on all 3 platforms
+        shell: bash
         run: |
           if [ "${{ matrix.os }}" = "macos-latest" ]; then
             npm run dist -- --mac
@@ -63,7 +64,7 @@ jobs:
       
     steps:
       - name: Download all build artifacts
-        uses: actions/download-artifact@vV4
+        uses: actions/download-artifact@v4
         with:
           path: all-dist
           pattern: dist-*
