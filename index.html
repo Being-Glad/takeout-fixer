@@ -430,6 +430,7 @@
             if (files.length === 0) return;
 
             resetApp(); // Clear previous run
+            logContainer.innerHTML = ''; // *** THIS IS THE FIX FOR THE "STUCK" LOG ***
             uploadSection.classList.add('hidden');
             logAccordion.classList.remove('hidden');
             headerResetBtn.classList.remove('hidden');
