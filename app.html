@@ -13,7 +13,8 @@
                 extend: {
                     colors: {
                         indigo: { 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
-                        gray: { 800: '#1f2937', 900: '#111827', 950: '#09090b' }
+                        gray: { 800: '#1f2937', 900: '#111827', 950: '#09090b' },
+                        yellow: { 400: '#facc15', 500: '#eab308' }
                     }
                 }
             }
@@ -24,7 +25,7 @@
         body { font-family: 'Inter', sans-serif; user-select: none; }
         /* Draggable Header */
         #app-header { -webkit-app-region: drag; }
-        #app-header button { -webkit-app-region: no-drag; }
+        #app-header button, #app-header a { -webkit-app-region: no-drag; }
         /* Fix for Mac Traffic Lights */
         .platform-darwin #app-header { padding-left: 72px; }
         /* Custom Scrollbar */
@@ -45,8 +46,11 @@
 
     <header id="app-header" class="flex justify-between items-center bg-gray-900/50 backdrop-blur-md border-b border-gray-800 p-3 fixed top-0 left-0 right-0 z-50">
         <div class="flex items-center">
-            <svg class="h-6 w-6 mr-3" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="100" height="100" rx="20" fill="#18181b"/><rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/><rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/><rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/>
+            <svg class="h-6 w-6 mr-3" width="64" height="64" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100" height="100" rx="20" fill="#111827"/>
+                <rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/>
+                <rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/>
+                <rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/>
             </svg>
             <span class="text-base font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">Takeout Date Fixer</span>
         </div>
@@ -93,7 +97,7 @@
                         <p class="text-green-300/80 mt-1" id="results-summary"></p>
                     </div>
                 </div>
-                <div class="bg-gradient-to-r from-yellow-600/20 to-orange-600/20 border border-yellow-500/30 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div class="bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
                     <div class="flex items-center"><span class="text-3xl mr-4">☕</span><div><h4 class="text-white font-semibold">Saved you time?</h4><p class="text-yellow-200/80 text-sm">Consider supporting future development to keep this tool free forever.</p></div></div>
                     <a id="donate-btn-results" href="https://buymeacoffee.com/Being_Glad" target="_blank" class="whitespace-nowrap bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-3 px-6 rounded-xl transition shadow-lg shadow-yellow-500/20">Fuel Future Development</a>
                 </div>
@@ -105,7 +109,7 @@
                     <svg class="rotate-icon h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                 </button>
                  <div id="log-content" class="accordion-content bg-black">
-                     <div id="progress-bar-container" class="p-4 space-y-2 hidden">
+                     <div id="progress-bar-container" class="p-4 space-y-2 hidden border-b border-gray-700">
                          <div class="w-full bg-gray-700 rounded-full h-2.5">
                             <div id="progress-bar-inner" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%; transition: width 0.2s ease;"></div>
                         </div>
@@ -167,6 +171,7 @@
         const progressBar = document.getElementById('progress-bar-inner');
         const headerResetBtn = document.getElementById('header-reset-btn');
         const appHeader = document.getElementById('app-header');
+        const donateBtnResults = document.getElementById('donate-btn-results');
 
         // --- Mac Platform Fix ---
         window.electron.getPlatform().then(platform => {
@@ -182,7 +187,7 @@
             progressContainer.classList.add('hidden');
             headerResetBtn.classList.add('hidden');
             logContainer.innerHTML = '<p class="text-gray-500">Waiting to start...</p>';
-            if (!logAccordion.classList.contains('accordion-open')) {
+            if (logAccordion.classList.contains('accordion-open')) {
                 logToggle.click();
             }
         }
@@ -215,16 +220,27 @@
         });
         
         headerResetBtn.addEventListener('click', () => {
-             // Simple reload is the most robust way to reset the Electron backend
+             // Simple reload is the most robust way to reset the Electron backend state
              window.location.reload();
+        });
+        
+        // External link handler for the results donation button
+        donateBtnResults.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.electron.openExternal(e.currentTarget.href);
         });
 
         function startProcessing(paths) {
-            resetApp(); // Clear previous run
+            // Reset UI to processing state
             uploadSection.classList.add('hidden');
+            resultsSection.classList.add('hidden');
             progressContainer.classList.remove('hidden');
             headerResetBtn.classList.remove('hidden');
             logContainer.innerHTML = '';
+            if (!logAccordion.classList.contains('accordion-open')) {
+                logToggle.click();
+            }
+            // Send paths to backend
             window.electron.startProcessing(paths);
         }
 
@@ -248,8 +264,8 @@
 
         window.electron.onComplete((stats) => {
             resultsSummary.textContent = `Successfully fixed ${stats.fixed} files. ${stats.skipped} files were skipped.`;
-            resultsSection.classList.remove('hidden');
-            progressContainer.classList.add('hidden');
+            resultsSection.classList.remove('hidden'); // Show success banners
+            progressContainer.classList.add('hidden'); // Hide progress bar
         });
         
         // Log Accordion Toggle
