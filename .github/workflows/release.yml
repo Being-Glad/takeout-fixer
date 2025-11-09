@@ -27,7 +27,6 @@ jobs:
         run: npm install
 
       - name: Build application
-        # Specify 'shell: bash' to make the if/then syntax work on all 3 platforms
         shell: bash
         run: |
           if [ "${{ matrix.os }}" = "macos-latest" ]; then

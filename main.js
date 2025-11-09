@@ -270,7 +270,6 @@ function parseTimestampFromFilename(filename) {
     // Matches YYYYMMDD (date only)
     m = filename.match(/(\d{4})[-_]?(\d{2})[-_]?(\d{2})/);
     if (m) {
-        // *** THIS IS THE CORRECTED LINE ***
         const d = new Date(Date.UTC(m[1], m[2] - 1, m[3], 12, 0, 0)); // Default to noon
         if (!isNaN(d.getTime())) return d;
     }

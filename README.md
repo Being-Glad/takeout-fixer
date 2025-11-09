@@ -5,12 +5,14 @@
     <rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/>
     <rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/>
   </svg>
-  <h1>Takeout Date Fixer</h1>
-  <p><strong>Get your memories back in order.</strong></p>
+  
+  <h1 style="font-size: 3em; margin-top: 0.5em; margin-bottom: 0.2em;">Takeout Date Fixer</h1>
+  <p style="font-size: 1.25em;"><strong>Get your memories back in order.</strong></p>
+  
   <p>
-    <a href="https://github.com/Being-Glad/takeout-fixer/releases/latest"><img src="https://img.shields.io/github/v/release/Being-Glad/takeout-fixer?style=for-the-badge" alt="Latest Release"></a>
+    <a href="https://github.com/Being-Glad/takeout-fixer/releases/latest"><img src="https://img.shields.io/github/v/release/Being-Glad/takeout-fixer?style=for-the-badge&label=Latest%20Release" alt="Latest Release"></a>
     <a href="https://github.com/Being-Glad/takeout-fixer/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Being-Glad/takeout-fixer?style=for-the-badge" alt="License"></a>
-    <a href="https://github.com/Being-Glad/takeout-fixer/issues"><img src="https://img.shields.io/github/issues/Being-Glad/takeout-fixer?style=for-the-badge" alt="Issues"></a>
+    <a href="https://github.com/Being-Glad/takeout-fixer/issues"><img src="https://img.shields.io/github/issues/Being-Glad/takeout-fixer?style=for-the-badge&color=brightgreen" alt="Issues"></a>
   </p>
 </div>
 
@@ -84,19 +86,19 @@ You only have to do this once.
 > When you download from Google Takeout, Google separates the metadata (date, location) into JSON files. This tool reads them and puts the correct info back, so your photos don't all show today's date.
 
 **Is it safe?**
-> Yes. Both the web and desktop versions process your files 100% locally on your device. Your photos never leave your computer. The code is fully open-source for transparency.
+> Yes. It is 100% safe. All processing happens **entirely on your device**. Your photos never leave your computer. The code is open-source for transparency.
 
-**What's the difference between the Web app and the Desktop app?**
-> The **Quick-Fix (Web)** app is for small batches (<5GB) and only fixes file sorting dates (Date Modified). The **Desktop App** has no size limit and permanently writes true EXIF/GPS data into the files themselves.
+**Web App vs Desktop App?**
+> The **Quick-Fix (Web)** app is for small batches (<5GB) and only fixes sorting dates. The **Desktop App** has unlimited size and permanently writes true EXIF/GPS data into the files themselves.
 
 **Will this create duplicates?**
-> The **Desktop App** modifies your files *in-place*, so no duplicates are created. The **Web App** creates a new `.zip` file with your fixed photos, leaving your originals untouched.
+> The **Desktop App** modifies files **in-place**, so NO duplicates are created. The **Web App** creates a new zip file with your fixed photos, leaving your originals untouched.
 
-**Works with Apple Photos / Google Photos?**
+**Works with Apple Photos / Other Galleries?**
 > Yes! Use the **Desktop App** to process your files *first*. Then, when you import them into Apple Photos, Google Photos, or any other gallery, they will appear in the correct chronological order with all location data intact.
 
 **How fast is it?**
-> Extremely fast. The desktop app can process thousands of photos per minute because it runs locally on your computer's full power.
+> Extremely fast. The desktop app can process thousands of photos per minute because it runs locally on your computer's full power, not on a slow server.
 
 ## ☕ Support the Project
 
@@ -108,4 +110,4 @@ If you find this tool useful, please consider supporting its future development.
 
 ## 📜 License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the MIT License. 
