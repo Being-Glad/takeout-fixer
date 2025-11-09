@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Takeout Date Fixer</title>
+    <!-- The "Module" Logo Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2318181b'/><rect x='25' y='25' width='20' height='20' rx='3' fill='%23a855f7'/><rect x='55' y='25' width='20' height='20' rx='3' fill='%236d28d9'/><rect x='25' y='55' width='50' height='20' rx='3' fill='%234f46e5'/></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -14,8 +15,8 @@
                 extend: {
                     colors: {
                         indigo: { 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
-                        gray: { 800: '#1f2937', 900: '#111827', 950: '#09090b' },
-                        yellow: { 400: '#facc15', 500: '#eab308' }
+                        purple: { 400: '#c084fc', 500: '#a855f7', 600: '#9333ea' },
+                        gray: { 800: '#1f2937', 900: '#111827', 950: '#09090b' }
                     }
                 }
             }
@@ -32,16 +33,19 @@
         .accordion-open .rotate-icon { transform: rotate(180deg); }
         .animate-fade-in { animation: fadeIn 0.2s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        #download-modal { backdrop-filter: blur(5px); }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen">
 
+    <!-- Navigation -->
     <nav class="border-b border-gray-800 bg-gray-900/50 backdrop-blur-md sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center">
-                    <svg class="h-8 w-8 mr-3" width="64" height="64" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="100" height="100" rx="20" fill="#111827"/>
+                    <!-- The "Module" Logo (h-8 w-8 = 32px) -->
+                    <svg class="h-8 w-8 mr-3" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="100" height="100" rx="20" fill="#18181b"/>
                         <rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/>
                         <rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/>
                         <rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/>
@@ -51,6 +55,7 @@
                 <div class="flex items-center space-x-4">
                     <a href="#features" class="text-sm font-medium text-gray-300 hover:text-white transition hidden sm:block">Features</a>
                     <a href="#faq" class="text-sm font-medium text-gray-300 hover:text-white transition hidden sm:block">FAQ</a>
+                     <!-- Donate Button in Nav -->
                      <a href="https://buymeacoffee.com/Being_Glad" target="_blank" class="hidden sm:inline-flex items-center px-3 py-1.5 border border-yellow-500/50 text-sm font-medium rounded-md text-yellow-500 hover:bg-yellow-500/10 transition">
                         ☕ Buy me a coffee
                     </a>
@@ -63,10 +68,12 @@
     </nav>
 
     <main>
+        <!-- Hero Section -->
         <div class="relative overflow-hidden pt-16 pb-24 text-center">
              <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <svg class="h-16 w-16 mx-auto mb-8" width="64" height="64" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="100" height="100" rx="20" fill="#111827"/>
+                <!-- Hero Logo (h-24 w-24 = 96px) -->
+                <svg class="h-24 w-24 mx-auto mb-8" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" rx="20" fill="#18181b"/>
                     <rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/>
                     <rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/>
                     <rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/>
@@ -89,6 +96,7 @@
             </div>
         </div>
 
+        <!-- Features Grid -->
         <div id="features" class="py-16 bg-gray-900">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
@@ -114,7 +122,7 @@
                                     <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                 </span>
                                 <h3 class="mt-8 text-lg font-medium text-white tracking-tight">GPS Locations</h3>
-                                <p class="mt-5 text-base text-gray-400"><span class="font-semibold text-indigo-400">Desktop App</span> writes original latitude and longitude back into files, restoring your photo map.</p>
+                                <p class="mt-5 text-base text-gray-400">(Desktop App) Writes original latitude and longitude back into files, restoring your photo map.</p>
                             </div>
                         </div>
                     </div>
@@ -125,7 +133,7 @@
                                     <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                 </span>
                                 <h3 class="mt-8 text-lg font-medium text-white tracking-tight">Descriptions</h3>
-                                <p class="mt-5 text-base text-gray-400"><span class="font-semibold text-indigo-400">Desktop App</span> recovers your original captions and embeds them back into the file.</p>
+                                <p class="mt-5 text-base text-gray-400">(Desktop App) Recovers your original captions and descriptions and embeds them back into the file.</p>
                             </div>
                         </div>
                     </div>
@@ -133,19 +141,17 @@
             </div>
         </div>
 
+        <!-- Web App Section -->
         <div id="quick-fix" class="py-24">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-800">
+                    <!-- Header -->
                     <div class="bg-gray-800 px-6 py-4 border-b border-gray-700 flex items-center justify-between">
                         <h2 class="text-lg font-semibold text-white flex items-center">
-                             <svg class="h-5 w-5 mr-2" width="64" height="64" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="100" height="100" rx="20" fill="#111827"/>
-                                <rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/>
-                                <rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/>
-                                <rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/>
-                            </svg>
+                             <svg class="h-5 w-5 mr-2" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="20" fill="#18181b"/><rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/><rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/><rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/></svg>
                             Quick-Fix · On the Go
                         </h2>
+                        <!-- Start Over Button (Initially hidden) -->
                         <button id="header-reset-btn" class="hidden text-sm text-gray-400 hover:text-white transition flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -169,31 +175,17 @@
                             </div>
                         </div>
 
-                        <div id="results-section" class="hidden space-y-6 animate-fade-in">
+                        <div id="results-section" class="hidden space-y-6">
                             <div class="bg-green-900/20 border border-green-900 rounded-lg p-4 flex items-start">
                                  <svg class="h-6 w-6 text-green-500 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                 <div><h3 class="text-lg font-medium text-green-400">Processing Complete!</h3><p class="text-green-300/80 mt-1" id="results-summary"></p></div>
                             </div>
-                             <div class="bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                             <!-- Donation Prompt (Shown after processing) -->
+                             <div class="bg-gradient-to-r from-yellow-600/20 to-orange-600/20 border border-yellow-500/30 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
                                 <div class="flex items-center"><span class="text-3xl mr-4">☕</span><div><h4 class="text-white font-semibold">Saved you time?</h4><p class="text-yellow-200/80 text-sm">Consider supporting future development to keep this tool free forever.</p></div></div>
                                 <a href="https://buymeacoffee.com/Being_Glad" target="_blank" class="whitespace-nowrap bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-3 px-6 rounded-xl transition shadow-lg shadow-yellow-500/20">Fuel Future Development</a>
                             </div>
-                            
-                            <div id="download-buttons" class="space-y-4">
-                                <div id="master-download-area"></div>
-                                
-                                <div id="download-divider" class="hidden items-center py-4">
-                                    <div class="flex-grow h-px bg-gray-700"></div>
-                                    <span class="flex-shrink-0 text-gray-500 px-4 text-sm font-medium">OR DOWNLOAD INDIVIDUALLY</span>
-                                    <div class="flex-grow h-px bg-gray-700"></div>
-                                </div>
-
-                                <div id="individual-download-area" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-                            </div>
-
-                            <button id="footer-reset-btn" class="w-full text-center py-3 text-indigo-400 hover:text-indigo-300 text-sm font-medium transition">
-                                Process Another Folder
-                            </button>
+                            <div id="download-buttons" class="space-y-4"></div>
                         </div>
 
                         <div id="log-accordion" class="border border-gray-800 rounded-lg overflow-hidden hidden">
@@ -208,6 +200,7 @@
             </div>
         </div>
 
+        <!-- Testimonials -->
         <section class="py-16 bg-gray-900 border-t border-gray-800">
              <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 class="text-3xl font-extrabold text-white mb-8">Trusted by Users</h2>
@@ -220,28 +213,33 @@
             </div>
         </section>
 
+        <!-- Downloads Section -->
         <div id="desktop-app" class="py-24">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                  <h2 class="text-4xl font-extrabold text-white mb-4">Get the Full-Power Desktop App</h2>
                 <p class="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">No size limits. Permanent EXIF & GPS fixes. Runs entirely offline.</p>
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
-                     <button data-download-url="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.exe" class="desktop-download-btn group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-2xl hover:border-gray-700 transition w-64 h-32 cursor-pointer">
+                     <!-- Windows Button -->
+                    <button data-download-url="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.exe" class="desktop-download-btn group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-2xl hover:border-indigo-500 transition w-64 h-32 cursor-pointer">
                         <span class="text-gray-400 font-medium text-sm mb-2">Download for</span>
-                        <span class="text-white text-2xl font-bold group-hover:text-white transition">Windows</span>
+                        <span class="text-white text-2xl font-bold group-hover:text-indigo-300 transition">Windows</span>
                     </button>
-                    <button data-download-url="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.AppImage" class="desktop-download-btn group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-2xl hover:border-gray-700 transition w-64 h-32 cursor-pointer">
+                    <!-- Linux Button -->
+                    <button data-download-url="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.AppImage" class="desktop-download-btn group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-2xl hover:border-indigo-500 transition w-64 h-32 cursor-pointer">
                         <span class="text-gray-400 font-medium text-sm mb-2">Download for</span>
-                        <span class="text-white text-2xl font-bold group-hover:text-white transition">Linux</span>
+                        <span class="text-white text-2xl font-bold group-hover:text-indigo-300 transition">Linux</span>
                     </button>
-                    <button data-download-url="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.dmg" class="desktop-download-btn group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-2xl hover:border-gray-700 transition w-64 h-32 cursor-pointer">
+                    <!-- Mac Button -->
+                    <button data-download-url="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.dmg" class="desktop-download-btn group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-2xl hover:border-indigo-500 transition w-64 h-32 cursor-pointer">
                         <span class="text-gray-400 font-medium text-sm mb-2">Download for</span>
-                        <span class="text-white text-lg font-bold group-hover:text-white transition">Mac (Universal)</span>
+                        <span class="text-white text-lg font-bold group-hover:text-indigo-300 transition">Mac (Universal)</span>
                     </button>
                 </div>
-                <p class="mt-8 text-gray-500">100% Free & Open Source</p>
+                <p class="mt-8 text-gray-500">Version 1.0 • 100% Free & Open Source</p>
             </div>
         </div>
 
+        <!-- FAQ -->
         <section id="faq" class="py-16 bg-gray-900 border-t border-gray-800">
              <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="text-3xl font-extrabold text-white text-center mb-12">Frequently Asked Questions</h2>
@@ -256,30 +254,32 @@
                     </div>
                     <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
                         <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Web App vs Desktop App?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                        <div class="faq-content hidden px-6 pb-4 text-gray-400">The <span class="font-semibold text-white">Quick-Fix (Web)</span> app is for small batches (&lt;5GB) and only fixes sorting dates. The <span class="font-semibold text-white">Desktop App</span> has unlimited size and permanently writes true EXIF/GPS data into the files themselves.</div>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">The <span class="font-semibold text-white">Quick-Fix (Web)</span> app is for small batches (<5GB) and only fixes sorting dates. The <span class="font-semibold text-white">Desktop App</span> has unlimited size and permanently writes true EXIF/GPS data into the files themselves.</div>
                     </div>
                     <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
                         <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Will this create duplicates?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                        <div class="faq-content hidden px-6 pb-4 text-gray-400">The <span class="font-semibold text-white">Desktop App</span> modifies files <span class="font-semibold text-white">in-place</span>, so NO duplicates are created. The <span class="font-semibold text-white">Web App</span> creates a new zip file with your fixed photos, leaving your originals untouched.</div>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">The Desktop App modifies files <span class="font-semibold text-white">in-place</span>, so NO duplicates are created. The Web App creates a new zip file with your fixed photos, leaving your originals untouched.</div>
                     </div>
                      <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
-                        <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Works with Apple Photos / Other Galleries?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                        <div class="faq-content hidden px-6 pb-4 text-gray-400">Yes! Use the <span class="font-semibold text-white">Desktop App</span> to process your files first. Then, when you import them into Apple Photos, Google Photos, or any other gallery, they will appear in the correct chronological order with all location data intact.</div>
+                        <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Works with Apple Photos?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">Yes! Use the <span class="font-semibold text-white">Desktop App</span> to process your files first. Then, when you import them into Apple Photos, they will appear in the correct chronological order with all location data intact.</div>
                     </div>
                     <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
                         <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">How fast is it?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                        <div class="faq-content hidden px-6 pb-4 text-gray-400">Extremely fast. The desktop app can process thousands of photos per minute because it runs locally on your computer's full power, not on a slow server.</div>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">Extremely fast. It can process thousands of photos per minute because it runs locally on your computer's full power, not on a slow server.</div>
                     </div>
                 </div>
             </div>
         </section>
 
         <footer class="bg-black py-8 text-center text-gray-500 text-sm">
-            <p>Created with 💜 by <a href="https://github.com/Being-Glad" target="_blank" class="hover:text-indigo-400 transition">Being_Glad</a>. Not affiliated with Google.</p>
+            <p>Created with 💜 by <a href="https://github.com/Being-Glad" class="hover:text-indigo-400 transition">Being_Glad</a>. Not affiliated with Google.</p>
         </footer>
 
-        <div id="download-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 animate-fade-in" style="backdrop-filter: blur(5px);">
+        <!-- Interstitial Donation Modal -->
+        <div id="download-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in">
             <div class="bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-md mx-4 border border-gray-700 relative">
+                 <!-- Close Button -->
                  <button id="modal-close" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -294,9 +294,9 @@
                         If this tool saved you time, please consider supporting its development to keep it free forever.
                     </p>
                     <div class="space-y-3">
-                        <a id="donate-download-btn" href="https://buymeacoffee.com/Being_Glad" target="_blank" class="w-full flex items-center justify-center px-4 py-3 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded-xl transition">
+                        <button id="donate-download-btn" class="w-full flex items-center justify-center px-4 py-3 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded-xl transition">
                             <span class="mr-2">☕</span> Donate & Download
-                        </a>
+                        </button>
                         <button id="just-download-btn" class="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold rounded-xl transition">
                             No thanks, just download
                         </button>
@@ -308,34 +308,6 @@
     </main>
 
     <script>
-        // --- Setup Elements ---
-        const logContainer = document.getElementById('processing-log');
-        const logToggle = document.getElementById('log-toggle');
-        const logAccordion = document.getElementById('log-accordion');
-        const resultsSection = document.getElementById('results-section');
-        const uploadSection = document.getElementById('upload-section');
-        const resultsSummary = document.getElementById('results-summary');
-        const headerResetBtn = document.getElementById('header-reset-btn');
-        const footerResetBtn = document.getElementById('footer-reset-btn');
-        const fileInput = document.getElementById('fileInput');
-        const dropZone = document.getElementById('upload-section');
-        const masterDownloadArea = document.getElementById('master-download-area');
-        const individualDownloadArea = document.getElementById('individual-download-area');
-        const downloadDivider = document.getElementById('download-divider');
-        const downloadModal = document.getElementById('download-modal');
-        const donateDownloadBtn = document.getElementById('donate-download-btn');
-        const justDownloadBtn = document.getElementById('just-download-btn');
-        const modalCloseBtn = document.getElementById('modal-close');
-
-        // --- Global State ---
-        let fileMap = new Map();
-        let mediaFileStore = new Map();
-        let rootFolderName = 'Takeout';
-        let pendingAction = null;
-        const FIVE_GB = 5 * 1024 * 1024 * 1024;
-        const mediaExts = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'tiff', 'mov', 'mp4', 'avi', 'mkv', '3gp']);
-
-        // --- Initial Binds ---
         // FAQ Toggles
         document.querySelectorAll('.faq-toggle').forEach(button => {
             button.addEventListener('click', () => {
@@ -345,17 +317,32 @@
             });
         });
 
-        // Log Toggle
+        // Log Toggles
+        const logToggle = document.getElementById('log-toggle');
+        const logAccordion = document.getElementById('log-accordion');
         logToggle.addEventListener('click', () => {
             logAccordion.classList.toggle('accordion-open');
             logToggle.querySelector('span').textContent = logAccordion.classList.contains('accordion-open') ? 'Hide Processing Log' : 'Show Processing Log';
         });
 
-        // Reset Buttons
+        // Start Over / Reset
+        const headerResetBtn = document.getElementById('header-reset-btn');
         headerResetBtn.addEventListener('click', resetApp);
-        footerResetBtn.addEventListener('click', resetApp);
-        
-        // --- Modal Logic ---
+        function resetApp() {
+            uploadSection.classList.remove('hidden');
+            resultsSection.classList.add('hidden');
+            logAccordion.classList.add('hidden'); logAccordion.classList.remove('accordion-open');
+            headerResetBtn.classList.add('hidden');
+            fileInput.value = '';
+        }
+
+        // --- MODAL LOGIC START ---
+        const downloadModal = document.getElementById('download-modal');
+        const donateDownloadBtn = document.getElementById('donate-download-btn');
+        const justDownloadBtn = document.getElementById('just-download-btn');
+        const modalCloseBtn = document.getElementById('modal-close');
+        let pendingAction = null;
+
         function showDownloadModal(action) {
             pendingAction = action;
             downloadModal.classList.remove('hidden');
@@ -364,116 +351,97 @@
             downloadModal.classList.add('hidden');
             pendingAction = null;
         }
-        modalCloseBtn.addEventListener('click', hideDownloadModal);
-        
-        // Main Donation/Download Button
+        modalCloseBtn.addEventListener('click', hideDownloadModal); // Close button handler
         donateDownloadBtn.addEventListener('click', () => {
-            // This is an <a> tag, so the href already opens the link.
-            // We just need to run the pending action and hide the modal.
+            window.open('https://buymeacoffee.com/Being_Glad', '_blank');
             if (pendingAction) pendingAction();
             hideDownloadModal();
         });
-        // Secondary Download-Only Button
         justDownloadBtn.addEventListener('click', () => {
             if (pendingAction) pendingAction();
             hideDownloadModal();
         });
-        
-        // Desktop App Download Button Hooks
+        // Desktop Download Buttons Hook
         document.querySelectorAll('.desktop-download-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const url = btn.getAttribute('data-download-url');
-                // Set the donation button's href to the BuyMeACoffee link
-                donateDownloadBtn.href = "https://buymeacoffee.com/Being_Glad";
-                donateDownloadBtn.target = "_blank";
-                // Set the pending action to redirect the main window
-                showDownloadModal(() => { window.location.href = url; });
+                showDownloadModal(() => window.location.href = url);
             });
         });
-        
-        // --- App Logic ---
-        function resetApp() {
-            uploadSection.classList.remove('hidden');
-            resultsSection.classList.add('hidden');
-            logAccordion.classList.add('hidden'); 
-            logAccordion.classList.remove('accordion-open');
-            headerResetBtn.classList.add('hidden');
-            fileInput.value = ''; // Allows re-uploading the same folder
-            logContainer.innerHTML = '<p class="text-gray-500">Waiting to start...</p>';
-            masterDownloadArea.innerHTML = '';
-            individualDownloadArea.innerHTML = '';
-            downloadDivider.classList.add('hidden');
-        }
+        // --- MODAL LOGIC END ---
 
-        // --- Drag & Drop / File Input ---
+        // Web App Logic
+        const dropZone = document.getElementById('upload-section');
+        const fileInput = document.getElementById('fileInput');
+        const logContainer = document.getElementById('processing-log');
+        const resultsSection = document.getElementById('results-section');
+        const uploadSection = document.getElementById('upload-section');
+        const downloadButtons = document.getElementById('download-buttons');
+        const resultsSummary = document.getElementById('results-summary');
+        const FIVE_GB = 5 * 1024 * 1024 * 1024;
+
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, preventDefaults, false);
         });
         function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
         ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => dropZone.classList.add('active'), false);
+            dropZone.addEventListener(eventName, highlight, false);
         });
         ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => dropZone.classList.remove('active'), false);
+            dropZone.addEventListener(eventName, unhighlight, false);
         });
+        function highlight(e) { dropZone.classList.add('active'); }
+        function unhighlight(e) { dropZone.classList.remove('active'); }
+
         dropZone.addEventListener('drop', handleDrop, false);
         dropZone.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+        fileInput.addEventListener('change', handleFiles);
 
         function handleDrop(e) {
             const dt = e.dataTransfer;
             const files = dt.files;
-            if (files.length > 0) handleFiles(files);
+            if (files.length > 0) handleFiles({ target: { files: files } });
         }
 
-        // --- Core File Processing (Fixed "Stuck" Bug) ---
-        async function handleFiles(files) {
+        let fileMap = new Map();
+        let mediaFileStore = new Map();
+        let rootFolderName = 'Takeout';
+
+        async function handleFiles(event) {
+            const files = event.target.files;
             if (files.length === 0) return;
 
-            resetApp(); 
-            logContainer.innerHTML = ''; // <-- FIX: Clear "Waiting to start..."
             uploadSection.classList.add('hidden');
+            resultsSection.classList.add('hidden');
             logAccordion.classList.remove('hidden');
-            headerResetBtn.classList.remove('hidden');
+            headerResetBtn.classList.remove('hidden'); // Show Start Over
             if (!logAccordion.classList.contains('accordion-open')) {
                 logToggle.click(); 
             }
             
+            logContainer.innerHTML = '';
+            downloadButtons.innerHTML = '';
             log('Starting analysis of your Takeout folder...');
-            
+
             fileMap.clear();
             mediaFileStore.clear();
             let mediaFiles = [];
             let jsonFiles = [];
             let totalSize = 0;
-            let rootFolderFound = false;
+            
+            rootFolderName = files[0].webkitRelativePath.split('/')[0] || 'Takeout';
+
+            const mediaExts = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'tiff', 'mov', 'mp4', 'avi', 'mkv', '3gp']);
 
             for (const file of files) {
-                // Find the root folder name from the first valid path
-                if (!rootFolderFound && file.webkitRelativePath) {
-                    rootFolderName = file.webkitRelativePath.split('/')[0] || 'Takeout';
-                    rootFolderFound = true;
-                }
-                
                 totalSize += file.size;
                 const ext = file.name.split('.').pop()?.toLowerCase();
-                
                 if (ext === 'json') {
                     jsonFiles.push(file);
                 } else if (mediaExts.has(ext)) {
-                    // We *must* have a relative path to store it
-                    if (file.webkitRelativePath) {
-                         mediaFiles.push(file);
-                         mediaFileStore.set(file.webkitRelativePath, file);
-                    }
+                    mediaFiles.push(file);
+                    mediaFileStore.set(file.webkitRelativePath, file);
                 }
-            }
-            
-            // If we went through all files and found no paths, it wasn't a folder.
-            if (!rootFolderFound && mediaFiles.length > 0) {
-                 log('Error: Please upload the entire folder, not just individual files.', 'error');
-                 resetApp();
-                 return;
             }
 
             if (totalSize > FIVE_GB) {
@@ -483,7 +451,7 @@
                 return;
             }
 
-            log(`Found ${mediaFiles.length} media files and ${jsonFiles.length} JSON files.`);
+            log(`Found ${mediaFiles.length} media files and ${jsonFiles.length} JSON metadata files.`);
 
             for (const file of jsonFiles) {
                 try {
@@ -497,7 +465,7 @@
             }
             log(`Successfully parsed metadata from ${fileMap.size} JSON files.`);
 
-            let fixedFilesMap = new Map();
+            let fixedFiles = new Map();
             let skippedCount = 0;
             let fixedCount = 0;
 
@@ -517,20 +485,19 @@
 
                 const pathParts = relativePath.split('/');
                 let folderName = 'root';
-                // pathParts[0] is root, pathParts[1] is the folder, pathParts[2] is the file
                 if (pathParts.length > 2) {
                     folderName = pathParts[1];
                 }
 
-                if (!fixedFilesMap.has(folderName)) {
-                    fixedFilesMap.set(folderName, []);
+                if (!fixedFiles.has(folderName)) {
+                    fixedFiles.set(folderName, []);
                 }
 
                 if (timestamp) {
-                    fixedFilesMap.get(folderName).push({ path: relativePath, newDate: timestamp * 1000, skipped: false });
+                    fixedFiles.get(folderName).push({ path: relativePath, newDate: timestamp * 1000, skipped: false });
                     fixedCount++;
                 } else {
-                    fixedFilesMap.get(folderName).push({ path: relativePath, newDate: mediaFile.lastModified, skipped: true });
+                    fixedFiles.get(folderName).push({ path: relativePath, skipped: true });
                     skippedCount++;
                     log(`Skipped (no date found): ${mediaFile.name}`, 'warn');
                 }
@@ -540,7 +507,7 @@
             resultsSummary.textContent = `Success! ${fixedCount} files matched. ${skippedCount} skipped files will be included in a separate folder.`;
             
             if (fixedCount > 0 || skippedCount > 0) {
-                displayDownloadButtons(fixedFilesMap);
+                displayDownloadButtons(fixedFiles);
             } else {
                  log('No files could be processed.', 'error');
             }
@@ -549,82 +516,68 @@
         function displayDownloadButtons(folderMap) {
             resultsSection.classList.remove('hidden');
             
-            const folderNames = Array.from(folderMap.keys());
-            const hasMultipleFolders = folderNames.length > 1 || (folderNames.length === 1 && folderNames[0] !== 'root');
-
-            // 1. Create MASTER download button
+            // 1. Create MASTER download button first
             const masterBtn = createDownloadButton(`${rootFolderName}-Fixed.zip`, `Download All Folders (${mediaFileStore.size} files)`, true);
-            // Hook up to modal
-            masterBtn.onclick = () => {
-                donateDownloadBtn.href = "https://buymeacoffee.com/Being_Glad";
-                donateDownloadBtn.target = "_blank";
-                showDownloadModal(() => downloadFolder(folderMap, `${rootFolderName}-Fixed.zip`, masterBtn));
-            };
-            masterDownloadArea.appendChild(masterBtn);
+            masterBtn.onclick = () => showDownloadModal(() => downloadFolder(folderMap, `${rootFolderName}-Fixed.zip`, masterBtn));
+            downloadButtons.appendChild(masterBtn);
 
-            // 2. Create SUBSET buttons (only if there are multiple subfolders)
-            if (hasMultipleFolders) {
-                downloadDivider.classList.remove('hidden');
-                
-                const sortedFolders = folderNames.sort().reverse();
-                for (const folderName of sortedFolders) {
-                    // Don't show a 'root' folder if it's empty and we have other named folders
-                    if (folderName === 'root' && folderMap.get('root').length === 0 && folderMap.size > 1) continue;
+            // If there's only one folder (e.g. 'root' or just one year), don't show subsets
+            if (folderMap.size <= 1) return;
 
-                    const files = folderMap.get(folderName);
-                    const btn = createDownloadButton(`${folderName}.zip`, `${folderName} (${files.length} files)`, false);
-                    const singleFolderMap = new Map([[folderName, files]]);
-                    // Hook up to modal
-                    btn.onclick = () => {
-                        donateDownloadBtn.href = "https://buymeacoffee.com/Being_Glad";
-                        donateDownloadBtn.target = "_blank";
-                        showDownloadModal(() => downloadFolder(singleFolderMap, `${folderName}.zip`, btn));
-                    };
-                    individualDownloadArea.appendChild(btn);
-                }
+            // 2. Create Separator
+            const separator = document.createElement('div');
+            separator.className = "flex items-center py-4";
+            separator.innerHTML = '<div class="flex-grow h-px bg-gray-700"></div><span class="flex-shrink-0 text-gray-500 px-4 text-sm font-medium">OR DOWNLOAD INDIVIDUALLY</span><div class="flex-grow h-px bg-gray-700"></div>';
+            downloadButtons.appendChild(separator);
+
+            // 3. Create SUBSET buttons
+            // Sort folders by name (usually years, so reverse sort is nice)
+            const sortedFolders = Array.from(folderMap.keys()).sort().reverse();
+
+            for (const folderName of sortedFolders) {
+                if (folderName === 'root' && folderMap.size > 1 && folderMap.get('root').length === 0) continue;
+
+                const files = folderMap.get(folderName);
+                const btn = createDownloadButton(`${folderName}.zip`, `Download ${folderName} (${files.length} files)`, false);
+                const singleFolderMap = new Map([[folderName, files]]);
+                // Hook up to modal
+                btn.onclick = () => showDownloadModal(() => downloadFolder(singleFolderMap, `${folderName}.zip`, btn));
+                downloadButtons.appendChild(btn);
             }
         }
 
         function createDownloadButton(fileName, text, isMaster) {
             const btn = document.createElement('button');
-            if (isMaster) {
-                btn.className = 'w-full flex items-center justify-center px-6 py-4 bg-green-600 hover:bg-green-500 text-white font-bold text-lg rounded-xl transition shadow-lg';
-            } else {
-                btn.className = 'w-full flex items-center justify-center px-5 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition';
-            }
+            // Master button gets primary green, subsets get a slightly different shade/style if desired, currently sharing same base green
+            btn.className = `w-full flex items-center justify-center px-6 py-4 ${isMaster ? 'bg-green-600 hover:bg-green-500 text-white font-bold text-lg' : 'bg-green-600/80 hover:bg-green-500/80 text-white font-semibold'} rounded-xl transition shadow-lg`;
             btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> ${text}`;
             return btn;
         }
 
         async function downloadFolder(folderMap, zipName, btn) {
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Zipping...';
+            btn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Zipping...';
             btn.disabled = true;
-            log(`Zipping ${zipName}... this may take a while for large folders.`);
-            
+            log(`Zipping ${zipName}...`);
+
             const zip = new JSZip();
-            
             for (const [folderName, files] of folderMap.entries()) {
                 for (const fileData of files) {
                     const originalFile = mediaFileStore.get(fileData.path);
                     if (originalFile) {
-                        let zipPath = originalFile.webkitRelativePath;
-                        // Remove the root folder name from the path for cleaner zips
-                        const firstSlash = zipPath.indexOf('/');
-                        if (firstSlash !== -1) zipPath = zipPath.substring(firstSlash + 1);
-
+                        // Smart pathing: If it's a skipped file, put it in _SKIPPED subfolder
+                        let zipPath = originalFile.webkitRelativePath.substring(originalFile.webkitRelativePath.indexOf('/') + 1);
                         if (fileData.skipped) {
-                            // Move skipped files into a _SKIPPED subfolder
-                            const parts = zipPath.split('/');
-                            const fileName = parts.pop();
-                            zipPath = [...parts, '_SKIPPED', fileName].join('/');
-                            // Use original file date for skipped files
-                            zip.file(zipPath, originalFile, { date: new Date(fileData.newDate), binary: true });
-                        } else {
-                            zip.file(zipPath, originalFile, {
-                                date: new Date(fileData.newDate),
-                                binary: true
-                            });
+                             const pathParts = zipPath.split('/');
+                             const fileName = pathParts.pop();
+                             // Insert _SKIPPED before filename. e.g., 2024/_SKIPPED/photo.jpg
+                             zipPath = [...pathParts, '_SKIPPED', fileName].join('/');
+                        }
+
+                        if (zipPath) {
+                            // Use original date for skipped, new date for fixed
+                            const dateToUse = fileData.skipped ? new Date(originalFile.lastModified) : new Date(fileData.newDate);
+                            zip.file(zipPath, originalFile, { date: dateToUse, binary: true });
                         }
                     }
                 }
@@ -632,24 +585,20 @@
 
             try {
                 const content = await zip.generateAsync({ type: "blob" });
-                saveAs(content, zipName);
-                log(`Download started for ${zipName}`, 'success');
+                log(`Successfully created ${zipName}!`, 'success');
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = zipName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
             } catch (e) {
                 log(`Error zipping: ${e.message}`, 'error');
-                alert("An error occurred while zipping. Please try again or use the Desktop App for large files.");
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
-        }
-        
-        // Simple saveAs shim
-        function saveAs(blob, filename) {
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = filename;
-            link.click();
-            URL.revokeObjectURL(link.href);
         }
 
         function log(message, type = 'info') {
@@ -658,86 +607,26 @@
             if (type === 'error') color = 'text-red-400';
             if (type === 'success') color = 'text-green-400';
             if (type === 'warn') color = 'text-yellow-400';
-            p.className = `${color} mb-1`;
+            p.className = `${color} mb-1 break-all`;
             p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
             logContainer.prepend(p);
         }
-        
-        // --- Normalization & Parsing ---
-        const normalizePath = (path) => {
-            let key = path.toLowerCase().replace(/(\.json)$/i, '');
-            
-            // Get base path without extension
-            const ext = key.lastIndexOf('.');
-            if(ext > -1) key = key.substring(0, ext);
 
-            // Strip common Google Photos suffixes
-            key = key.replace(/(\(\d+\))$/, '') // (1), (2), etc.
-                .replace(/-edited$/, '')
-                .replace(/_edited$/, '')
-                .replace(/-collage$/, '')
-                .replace(/-animation$/, '')
-                .replace(/-effects$/, '')
-                .replace(/-cinematic$/, '')
-                .replace(/-motion$/, '')
-                .replace(/-burst\d+$/, '')
-                .replace(/\.supplemental-metadata$/, '')
-                .trim();
-                
-            return key;
-        };
+        const normalizePath = (p) => p.toLowerCase().replace(/\.json$/i, '').replace(/(\(\d+\))|(_\d{13,})|(-collage)|(-cinematic)|(-remastered)|(-pop_out)|(-edited)/g, '').trim();
 
         const parseDateFromFilename = (filename) => {
-             // Matches YYYYMMDD_HHMMSS or YYYY-MM-DD HH-MM-SS
-            let m = filename.match(/(\d{4})[-_]?(\d{2})[-_]?(\d{2})[-_ \.]?(\d{2})[-_]?(\d{2})[-_]?(\d{2})/);
-            if (m) {
-                const d = new Date(Date.UTC(m[1], parseInt(m[2]) - 1, m[3], m[4], m[5], m[6]));
-                if (!isNaN(d.getTime())) return d;
-            }
-            
-            // Matches IMG-YYYYMMDD-WA0001
-            m = filename.match(/IMG-(\d{4})(\d{2})(\d{2})-WA\d+/i);
-             if (m) {
-                const d = new Date(Date.UTC(m[1], parseInt(m[2]) - 1, m[3], 12, 0, 0)); // Default to noon
-                if (!isNaN(d.getTime())) return d;
-            }
-
-            // Matches YYYYMMDD (date only)
-            m = filename.match(/(\d{4})[-_]?(\d{2})[-_]?(\d{2})/);
-            if (m) {
-                const d = new Date(Date.UTC(m[1], parseInt(m[2]) - 1, m[3], 12, 0, 0)); // Default to noon
-                if (!isNaN(d.getTime())) return d;
+            const regexes = [/(\d{4})[-_]?(\d{2})[-_]?(\d{2})[-_]?(\d{2})[-_]?(\d{2})[-_]?(\d{2})/, /IMG[-_](\d{4})(\d{2})(\d{2})[-_](\d{6})/, /(\d{4})[-_](\d{2})[-_](\d{2})/];
+            for (const regex of regexes) {
+                const match = filename.match(regex);
+                if (match) {
+                    const y = parseInt(match[1]);
+                    if (y >= 1970 && y <= new Date().getFullYear() + 1) {
+                        return new Date(Date.UTC(y, parseInt(match[2]) - 1, parseInt(match[3]), match[4] ? parseInt(match[4]) : 12, match[5] ? parseInt(match[5]) : 0, match[6] ? parseInt(match[6]) : 0));
+                    }
+                }
             }
             return null;
-        };
-
-        // --- OS Detection for Smart Download Highlight ---
-        const getOS = () => {
-            const userAgent = window.navigator.userAgent;
-            if (userAgent.indexOf("Win") != -1) return "Windows";
-            if (userAgent.indexOf("Mac") != -1) return "Mac";
-            if (userAgent.indexOf("Linux") != -1) return "Linux";
-            return "Unknown";
         }
-        
-        window.onload = () => {
-            const os = getOS();
-            let btnToHighlight;
-            if (os === "Windows") {
-                btnToHighlight = document.querySelector('button[data-download-url*=".exe"]');
-            } else if (os === "Mac") {
-                btnToHighlight = document.querySelector('button[data-download-url*=".dmg"]');
-            } else if (os === "Linux") {
-                btnToHighlight = document.querySelector('button[data-download-url*=".AppImage"]');
-            }
-            
-            if (btnToHighlight) {
-                // Remove default gray styles and add primary indigo styles
-                btnToHighlight.classList.remove('bg-gray-800', 'border-gray-700', 'hover:border-gray-700');
-                btnToHighlight.classList.add('bg-indigo-600', 'border-indigo-500', 'hover:bg-indigo-700');
-            }
-        };
-
     </script>
 </body>
 </html>
