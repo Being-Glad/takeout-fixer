@@ -110,4 +110,4 @@ If you find this tool useful, please consider supporting its future development.
 
 ## 📜 License
 
-This project is licensed under the MIT License. 
+This project is licensed under the MIT License.

@@ -368,6 +368,8 @@
         
         // Main Donation/Download Button
         donateDownloadBtn.addEventListener('click', () => {
+            // This is an <a> tag, so the href already opens the link.
+            // We just need to run the pending action and hide the modal.
             if (pendingAction) pendingAction();
             hideDownloadModal();
         });
@@ -381,10 +383,10 @@
         document.querySelectorAll('.desktop-download-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const url = btn.getAttribute('data-download-url');
-                // For desktop app downloads, we don't open the donation link in a new tab,
-                // but we still run the action (window.location.href)
+                // Set the donation button's href to the BuyMeACoffee link
                 donateDownloadBtn.href = "https://buymeacoffee.com/Being_Glad";
                 donateDownloadBtn.target = "_blank";
+                // Set the pending action to redirect the main window
                 showDownloadModal(() => { window.location.href = url; });
             });
         });
@@ -396,7 +398,7 @@
             logAccordion.classList.add('hidden'); 
             logAccordion.classList.remove('accordion-open');
             headerResetBtn.classList.add('hidden');
-            fileInput.value = '';
+            fileInput.value = ''; // Allows re-uploading the same folder
             logContainer.innerHTML = '<p class="text-gray-500">Waiting to start...</p>';
             masterDownloadArea.innerHTML = '';
             individualDownloadArea.innerHTML = '';
@@ -416,21 +418,20 @@
         });
         dropZone.addEventListener('drop', handleDrop, false);
         dropZone.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', handleFiles);
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
         function handleDrop(e) {
             const dt = e.dataTransfer;
             const files = dt.files;
-            if (files.length > 0) handleFiles({ target: { files: files } });
+            if (files.length > 0) handleFiles(files);
         }
 
-        // --- Core File Processing ---
-        async function handleFiles(event) {
-            const files = event.target.files;
+        // --- Core File Processing (Fixed "Stuck" Bug) ---
+        async function handleFiles(files) {
             if (files.length === 0) return;
 
-            resetApp(); // Clear previous run
-            logContainer.innerHTML = ''; // *** THIS IS THE FIX FOR THE "STUCK" LOG ***
+            resetApp(); 
+            logContainer.innerHTML = ''; // <-- FIX: Clear "Waiting to start..."
             uploadSection.classList.add('hidden');
             logAccordion.classList.remove('hidden');
             headerResetBtn.classList.remove('hidden');
@@ -445,18 +446,34 @@
             let mediaFiles = [];
             let jsonFiles = [];
             let totalSize = 0;
-            
-            rootFolderName = files[0].webkitRelativePath.split('/')[0] || 'Takeout';
+            let rootFolderFound = false;
 
             for (const file of files) {
+                // Find the root folder name from the first valid path
+                if (!rootFolderFound && file.webkitRelativePath) {
+                    rootFolderName = file.webkitRelativePath.split('/')[0] || 'Takeout';
+                    rootFolderFound = true;
+                }
+                
                 totalSize += file.size;
                 const ext = file.name.split('.').pop()?.toLowerCase();
+                
                 if (ext === 'json') {
                     jsonFiles.push(file);
                 } else if (mediaExts.has(ext)) {
-                    mediaFiles.push(file);
-                    mediaFileStore.set(file.webkitRelativePath, file);
+                    // We *must* have a relative path to store it
+                    if (file.webkitRelativePath) {
+                         mediaFiles.push(file);
+                         mediaFileStore.set(file.webkitRelativePath, file);
+                    }
                 }
+            }
+            
+            // If we went through all files and found no paths, it wasn't a folder.
+            if (!rootFolderFound && mediaFiles.length > 0) {
+                 log('Error: Please upload the entire folder, not just individual files.', 'error');
+                 resetApp();
+                 return;
             }
 
             if (totalSize > FIVE_GB) {
@@ -466,7 +483,7 @@
                 return;
             }
 
-            log(`Found ${mediaFiles.length} media files and ${jsonFiles.length} JSON metadata files.`);
+            log(`Found ${mediaFiles.length} media files and ${jsonFiles.length} JSON files.`);
 
             for (const file of jsonFiles) {
                 try {
@@ -723,4 +740,4 @@
 
     </script>
 </body>
-</html> 
+</html>

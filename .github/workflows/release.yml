@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           if [ "${{ matrix.os }}" = "macos-latest" ]; then
-            npm run dist -- --mac
+            npm run dist -- --mac --x64 --arm64
           elif [ "${{ matrix.os }}" = "windows-latest" ]; then
             npm run dist -- --win
           else
