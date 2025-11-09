@@ -27,6 +27,7 @@ jobs:
         run: npm install
 
       - name: Build application
+        # Corrected 'if' statements and added env for Mac
         run: |
           if [ "${{ matrix.os }}" = "macos-latest" ]; then
             npm run dist -- --mac
@@ -36,34 +37,33 @@ jobs:
             npm run dist -- --linux
           fi
         env:
+          # Fix for macOS build failure: Disable code signing
+          CSC_IDENTITY_AUTO_DISCOVERY: false
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: dist-${{ matrix.os }}
-          # Upload only the final installer files, not the entire 'dist' folder
+          # Upload only the final installer files
           path: |
             dist/*.exe
             dist/*.dmg
             dist/*.AppImage
-            dist/*.snap
           if-no-files-found: error
 
   release:
     name: Release
     runs-on: ubuntu-latest
     needs: build
-    # Only run this job if the push was a tag (e.g., "v1.0.0")
     if: startsWith(github.ref, 'refs/tags/v')
     
-    # Grant permissions to write to GitHub Releases
     permissions:
       contents: write
       
     steps:
       - name: Download all build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@vV4
         with:
           path: all-dist
           pattern: dist-*
@@ -75,7 +75,7 @@ jobs:
           mv all-dist/*.exe release-assets/
           mv all-dist/*.dmg release-assets/
           mv all-dist/*.AppImage release-assets/
-          mv all-dist/*.snap release-assets/ || true # Ignore if snap doesn't exist
+          mv all-dist/*.snap release-assets/ || true
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
