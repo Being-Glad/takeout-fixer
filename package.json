@@ -42,11 +42,7 @@
     "mac": {
       "target": "dmg",
       "icon": "build/icon.icns",
-      "category": "public.app-category.photography",
-      "arch": [
-        "x64",
-        "arm64"
-      ]
+      "category": "public.app-category.photography"
     },
     "win": {
       "target": "nsis",
