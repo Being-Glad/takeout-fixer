@@ -28,7 +28,7 @@
   "build": {
     "appId": "com.beingglad.takeoutdatefixer",
     "productName": "Takeout Date Fixer",
-    "artifactName": "Takeout-Date-Fixer.${ext}",
+    "artifactName": "Takeout-Date-Fixer-${arch}.${ext}",
     "publish": null,
     "files": [
       "**/*",
@@ -42,15 +42,7 @@
     "mac": {
       "icon": "build/icon.icns",
       "category": "public.app-category.photography",
-      "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
-      ]
+      "target": "dmg"
     },
     "win": {
       "target": "nsis",

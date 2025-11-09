@@ -30,14 +30,16 @@ jobs:
         shell: bash
         run: |
           if [ "${{ matrix.os }}" = "macos-latest" ]; then
-            npm run dist -- --mac --x64 --arm64
+            # Build Intel version
+            npm run dist -- --mac --x64
+            # Build Apple Silicon version
+            npm run dist -- --mac --arm64
           elif [ "${{ matrix.os }}" = "windows-latest" ]; then
             npm run dist -- --win
           else
             npm run dist -- --linux
           fi
         env:
-          # Fix for macOS build failure: Disable code signing
           CSC_IDENTITY_AUTO_DISCOVERY: false
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -45,7 +47,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist-${{ matrix.os }}
-          # Upload only the final installer files
           path: |
             dist/*.exe
             dist/*.dmg
