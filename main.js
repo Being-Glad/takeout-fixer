@@ -1,7 +1,8 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
-const fs = require('fs');
-// Use a singleton instance of exiftool for better performance
+const fs = require('fs').promises;
+const os = require('os');
+// Use exiftool-vendored, which includes the binary
 const exiftool = require('exiftool-vendored').exiftool;
 
 let mainWindow;
@@ -12,30 +13,24 @@ function createWindow() {
         height: 700,
         minWidth: 800,
         minHeight: 600,
-        backgroundColor: '#09090b',
-        titleBarStyle: 'hidden',   // Hides native title bar
-        titleBarOverlay: {
-             color: '#09090b',     // Matches Mac traffic light area background
-             symbolColor: '#ffffff',
-             height: 45
-        },
+        titleBarStyle: 'hiddenInset', // Native-looking header on Mac
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
-            nodeIntegration: false,
-            sandbox: false // Required for some exiftool operations
+            nodeIntegration: false
         },
-        icon: path.join(__dirname, 'build/icon.png')
+        // Explicitly set icon for dev mode (especially helpful on Linux/Win)
+        icon: path.join(__dirname, 'build', 'icon.png')
     });
 
-    // Mac-specific: Force dock icon
-    if (process.platform === 'darwin') {
-        app.dock.setIcon(path.join(__dirname, 'build/icon.png'));
-    }
-
-    // Windows/Linux: Hide old-style menu bar
+    // Hide menu bar on Windows/Linux for a cleaner, native feel
     if (process.platform !== 'darwin') {
         mainWindow.setMenuBarVisibility(false);
+    }
+    
+    // Force Dock icon on macOS (fixes missing icon in dev mode)
+    if (process.platform === 'darwin') {
+        app.dock.setIcon(path.join(__dirname, 'build', 'icon.png'));
     }
 
     mainWindow.loadFile('app.html');
@@ -43,148 +38,188 @@ function createWindow() {
 
 app.whenReady().then(createWindow);
 
-// Proper cleanup on exit
+// Standard macOS behavior: Re-create window if dock icon is clicked
+app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+    }
+});
+
 app.on('window-all-closed', () => {
-    exiftool.end(); // Critical: kills the perl process
-    if (process.platform !== 'darwin') app.quit();
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
 });
 
-ipcMain.handle('open-dialog', async () => {
-    const result = await dialog.showOpenDialog(mainWindow, {
-        properties: ['openDirectory', 'multiSelections']
+// --- IPC Handlers ---
+ipcMain.handle('dialog:openDirectory', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+        properties: ['openDirectory']
     });
-    return result.filePaths;
+    if (canceled) return null;
+    return filePaths[0];
 });
 
-ipcMain.on('start-processing', async (event, paths) => {
-    const sender = event.sender;
-    // Helper to send logs to UI
-    const sendLog = (msg, type = 'info') => sender.send('log-message', msg, type);
+ipcMain.on('open-external', (event, url) => {
+    shell.openExternal(url);
+});
 
-    sendLog('Starting deeper analysis...');
+ipcMain.handle('get-platform', () => process.platform);
+
+ipcMain.on('start-processing', async (event, inputPath) => {
+    processFiles(inputPath);
+});
+
+// --- Core Logic ---
+async function processFiles(dirPath) {
     let mediaFiles = [];
-    let jsonMap = new Map();
+    let jsonFiles = new Map();
 
-    // 1. Recursive Scan Function
-    async function scanDir(dir) {
-        try {
-            const entries = await fs.promises.readdir(dir, { withFileTypes: true });
-            for (const entry of entries) {
-                const fullPath = path.join(dir, entry.name);
-                if (entry.isDirectory()) {
-                    await scanDir(fullPath);
-                } else {
-                    const ext = path.extname(entry.name).toLowerCase();
-                    if (ext === '.json') {
-                        // Read JSON metadata
-                        try {
-                            const data = JSON.parse(await fs.promises.readFile(fullPath, 'utf8'));
-                            // Look for standard Google Takeout timestamp fields
-                            const timestamp = data.photoTakenTime?.timestamp || data.creationTime?.timestamp;
-                            if (timestamp) {
-                                // Store metadata mapped to the file path (normalized)
-                                jsonMap.set(normalizePath(fullPath), {
-                                    timestamp: parseInt(timestamp),
-                                    title: data.title,
-                                    description: data.description,
-                                    gps: data.geoData
-                                });
-                            }
-                        } catch (e) {
-                            // Ignore unreadable/bad JSONs silently
-                        }
-                    } else if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.mov', '.mp4', '.avi', '.mkv'].includes(ext)) {
-                        mediaFiles.push(fullPath);
-                    }
+    async function scanDir(currentPath) {
+        const entries = await fs.readdir(currentPath, { withFileTypes: true });
+        for (const entry of entries) {
+            const fullPath = path.join(currentPath, entry.name);
+            if (entry.isDirectory()) {
+                await scanDir(fullPath);
+            } else {
+                const ext = path.extname(entry.name).toLowerCase();
+                if (ext === '.json') {
+                    jsonFiles.set(normalizePath(fullPath), fullPath);
+                } else if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.tiff', '.mov', '.mp4', '.avi', '.mkv', '.3gp'].includes(ext)) {
+                    mediaFiles.push(fullPath);
                 }
             }
-        } catch (err) {
-            sendLog(`Could not scan directory: ${dir}`, 'error');
         }
     }
 
-    // Helper to normalize paths for matching (removes .json, handles duplicates like (1))
-    function normalizePath(filePath) {
-        const dir = path.dirname(filePath);
-        const name = path.basename(filePath);
-        return path.join(dir, name.toLowerCase().replace(/\.json$/, '').replace(/\(\d+\)/, '').trim());
-    }
+    try {
+        mainWindow.webContents.send('add-log', `Scanning folder: ${dirPath}...`);
+        await scanDir(dirPath);
+        mainWindow.webContents.send('add-log', `Found ${mediaFiles.length} media files and ${jsonFiles.size} JSON files.`);
 
-    // 2. Start Scanning
-    for (const p of paths) {
-        if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
-            await scanDir(p);
-        }
-    }
+        let fixedCount = 0;
+        let skippedCount = 0;
 
-    sendLog(`Found ${mediaFiles.length} media files. Starting fix process...`);
-    sender.send('progress-update', { total: mediaFiles.length, current: 0 });
+        for (let i = 0; i < mediaFiles.length; i++) {
+            const mediaPath = mediaFiles[i];
+            const progress = i + 1;
+            
+            // Send progress update to UI
+            mainWindow.webContents.send('update-progress', progress, mediaFiles.length);
 
-    let fixed = 0, skipped = 0;
+            let key = normalizePath(mediaPath);
+            let jsonPath = jsonFiles.get(key);
 
-    // 3. Process Files
-    for (let i = 0; i < mediaFiles.length; i++) {
-        const filePath = mediaFiles[i];
-        const normalized = normalizePath(filePath);
-        // Try exact match first, then try matching without extension (common for some Takeout files)
-        let metadata = jsonMap.get(normalized) || jsonMap.get(normalized.substring(0, normalized.lastIndexOf('.')));
-
-        if (metadata) {
-             // Inform user *before* starting a potentially long write operation
-            if (i % 5 === 0 || fs.statSync(filePath).size > 100 * 1024 * 1024) { // Log every 5th file OR any file > 100MB
-                 sendLog(`Processing: ${path.basename(filePath)}...`);
+            if (!jsonPath) {
+                // Try without extension (common Google Photos pattern)
+                const baseKey = key.substring(0, key.lastIndexOf('.'));
+                jsonPath = jsonFiles.get(baseKey);
             }
 
-            try {
-                // Format date for ExifTool (YYYY:MM:DD HH:mm:ss)
-                const dateStr = new Date(metadata.timestamp * 1000).toISOString().replace(/\.\d{3}Z$/, '').replace(/[-:]/g, ':').replace('T', ' ');
+            let timestamp = null;
+            let gps = null;
+            let description = null;
 
-                // Prepare tags to write
-                let tags = {
+            // 1. Try finding data in JSON
+            if (jsonPath) {
+                try {
+                    const data = JSON.parse(await fs.readFile(jsonPath, 'utf8'));
+                    timestamp = data.photoTakenTime?.timestamp || data.creationTime?.timestamp;
+                    gps = data.geoData;
+                    description = data.description;
+                } catch (e) {
+                    mainWindow.webContents.send('add-log', `Error parsing JSON for: ${path.basename(mediaPath)}`, 'warn');
+                }
+            }
+
+            // 2. Smart Fallback: If no JSON date, try filename
+            if (!timestamp) {
+                timestamp = parseTimestampFromFilename(path.basename(mediaPath));
+                 if (timestamp) {
+                    // Convert MS timestamp back to seconds for consistency if needed, 
+                    // but ExifTool prefers standard date strings.
+                    // Actually, let's keep it as null here and handle it below.
+                     mainWindow.webContents.send('add-log', `Found date in filename for: ${path.basename(mediaPath)}`, 'info');
+                } else {
+                     mainWindow.webContents.send('add-log', `No JSON found for: ${path.basename(mediaPath)}`, 'warn');
+                }
+            }
+
+            // 3. If we found a date (from JSON OR filename), fix the file
+            if (timestamp) {
+                // Convert timestamp to ExifTool-friendly format
+                // Handle both seconds (JSON) and milliseconds (Filename regex)
+                const dateObj = new Date(timestamp > 100000000000 ? timestamp : timestamp * 1000);
+                const dateStr = dateObj.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+
+                const tags = {
                     AllDates: dateStr,
                     FileModifyDate: dateStr,
                     FileCreateDate: dateStr
                 };
 
-                // Add GPS if available
-                if (metadata.gps && (metadata.gps.latitude || metadata.gps.longitude)) {
-                    tags.GPSLatitude = metadata.gps.latitude;
-                    tags.GPSLongitude = metadata.gps.longitude;
-                    tags.GPSAltitude = metadata.gps.altitude;
+                if (gps && gps.latitude !== 0 && gps.longitude !== 0) {
+                    tags.GPSLatitude = gps.latitude;
+                    tags.GPSLongitude = gps.longitude;
+                    tags.GPSAltitude = gps.altitude;
                 }
-                // Add Description/Caption if available
-                if (metadata.description) {
-                    tags.ImageDescription = metadata.description;
-                    tags['Caption-Abstract'] = metadata.description;
+                if (description) {
+                    tags.ImageDescription = description;
+                    tags['Caption-Abstract'] = description;
                 }
-                // Add Title if available
-                if (metadata.title) {
-                    tags.Title = metadata.title;
+                
+                 // Log *before* starting heavy ExifTool operation so UI doesn't feel stuck on large files
+                if (fs.stat(mediaPath).then(s => s.size > 100 * 1024 * 1024)) { // > 100MB
+                     mainWindow.webContents.send('add-log', `Processing large file: ${path.basename(mediaPath)}...`);
                 }
 
-                // Write data using ExifTool (overwrite_original prevents _original backup files)
-                await exiftool.write(filePath, tags, ['-overwrite_original']);
-
-                // Also update file system timestamps explicitly as a backup
-                const utime = metadata.timestamp;
-                await fs.promises.utimes(filePath, utime, utime);
-
-                fixed++;
-            } catch (e) {
-                sendLog(`Failed to fix ${path.basename(filePath)}: ${e.message}`, 'error');
-                skipped++;
+                try {
+                    // Ensure we use a config file that doesn't have spaces to avoid issues
+                    // We don't need a specific config here, standard write works.
+                    await exiftool.write(mediaPath, tags, { writeArgs: ['-overwrite_original'] });
+                    fixedCount++;
+                } catch (e) {
+                    mainWindow.webContents.send('add-log', `ExifTool error for ${path.basename(mediaPath)}: ${e.message}`, 'error');
+                    skippedCount++;
+                }
+            } else {
+                skippedCount++;
             }
-        } else {
-            skipped++;
-             // Only log missing metadata occasionally to avoid spamming log
-             if (skipped < 10 || skipped % 50 === 0) {
-                 sendLog(`No JSON found for: ${path.basename(filePath)}`, 'warn');
-             }
         }
-        // Update progress bar
-        sender.send('progress-update', { total: mediaFiles.length, current: i + 1 });
-    }
 
-    sendLog('Finalizing...', 'success');
-    sender.send('process-complete', { fixed, skipped });
-});
+        mainWindow.webContents.send('processing-complete', { fixed: fixedCount, skipped: skippedCount });
+
+    } catch (err) {
+        mainWindow.webContents.send('add-log', `Fatal Error: ${err.message}`, 'error');
+    } finally {
+        // Always close exiftool instance
+        exiftool.end();
+    }
+}
+
+function normalizePath(p) {
+    return p.toLowerCase()
+        .replace(/\.json$/, '')
+        .replace(/\(\d+\)/g, '')
+        .replace(/ - edited/g, '')
+        .replace(/_edited/g, '')
+        .replace(/-collage/g, '')
+        .replace(/\.supplemental-metadata/, '')
+        .trim();
+}
+
+function parseTimestampFromFilename(f) {
+    // Matches YYYYMMDD_HHMMSS (standard Android/IMG)
+    let m = f.match(/(\d{4})[_-]?(\d{2})[_-]?(\d{2})[_-]?(\d{2})[_-]?(\d{2})[_-]?(\d{2})/);
+    if (m) {
+        const d = new Date(Date.UTC(m[1], m[2] - 1, m[3], m[4], m[5], m[6]));
+        if (!isNaN(d.getTime())) return d.getTime();
+    }
+    // Matches YYYYMMDD (date only)
+    m = f.match(/(\d{4})[_-]?(\d{2})[_-]?(\d{2})/);
+    if (m) {
+        const d = new Date(Date.UTC(m[1], m[2] - 1, m[3], 12, 0, 0));
+        if (!isNaN(d.getTime())) return d.getTime();
+    }
+    return null;
+}

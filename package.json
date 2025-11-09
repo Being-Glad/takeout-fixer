@@ -1,22 +1,65 @@
 {
   "name": "takeout-date-fixer",
   "productName": "Takeout Date Fixer",
+  "homepage": "https://github.com/Being-Glad/takeout-fixer",
   "version": "1.0.0",
-  "description": "Restore EXIF dates and metadata to Google Takeout photos.",
+  "description": "Fixes metadata and dates for Google Takeout photos and videos.",
   "main": "main.js",
-  "scripts": { "start": "electron .", "dist": "electron-builder" },
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "keywords": [
+    "google photos",
+    "takeout",
+    "metadata",
+    "exif",
+    "fixer"
+  ],
   "author": "Being_Glad",
   "license": "MIT",
-  "devDependencies": { "electron": "^28.0.0", "electron-builder": "^24.9.0" },
-  "dependencies": { "exiftool-vendored": "^25.0.0" },
+  "dependencies": {
+    "exiftool-vendored": "^28.3.0"
+  },
+  "devDependencies": {
+    "electron": "^33.0.2",
+    "electron-builder": "^25.1.8"
+  },
   "build": {
-    "appId": "com.takeout.datefixer",
+    "appId": "com.beingglad.takeoutdatefixer",
     "productName": "Takeout Date Fixer",
-    "publish": null,
-    "directories": { "buildResources": "assets" },
-    "files": [ "**/*", "!dist", "!node_modules/.cache" ],
-    "mac": { "target": "dmg", "artifactName": "Takeout-Date-Fixer.dmg" },
-    "win": { "target": "nsis", "artifactName": "Takeout-Date-Fixer.exe" },
-    "linux": { "target": "AppImage", "category": "Utility", "artifactName": "Takeout-Date-Fixer.AppImage" }
+    "artifactName": "${productName}.${ext}",
+    "directories": {
+      "buildResources": "build"
+    },
+    "files": [
+      "**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,LICENSE,LICENSE.txt}",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,__pycache__,thumbs.db,.gitignore,.gitattributes,.flowconfig,.yarn-metadata.json,.idea,appveyor.yml,.travis.yml,circle.yml,npm-debug.log,.nyc_output,yarn.lock,.yarn-integrity,.yarn-clean}"
+    ],
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icon.icns",
+      "category": "public.app-category.photography"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "icon": "build/icon.png",
+      "category": "Utility"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "publish": null
   }
 }

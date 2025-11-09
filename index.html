@@ -15,7 +15,6 @@
                 extend: {
                     colors: {
                         indigo: { 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
-                        purple: { 400: '#c084fc', 500: '#a855f7', 600: '#9333ea' },
                         gray: { 800: '#1f2937', 900: '#111827', 950: '#09090b' }
                     }
                 }
@@ -31,6 +30,10 @@
         .accordion-open .accordion-content { max-height: 500px; }
         .rotate-icon { transition: transform 0.3s ease; }
         .accordion-open .rotate-icon { transform: rotate(180deg); }
+        .animate-fade-in { animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        /* Modal Backdrop */
+        #download-modal { backdrop-filter: blur(5px); }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen">
@@ -40,7 +43,7 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center">
-                    <!-- The "Module" Logo -->
+                    <!-- The "Module" Logo (h-8 w-8 = 32px) -->
                     <svg class="h-8 w-8 mr-3" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="100" height="100" rx="20" fill="#18181b"/>
                         <rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/>
@@ -49,10 +52,13 @@
                     </svg>
                     <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">Takeout Date Fixer</span>
                 </div>
-                <div class="flex items-center space-x-6">
+                <div class="flex items-center space-x-4">
                     <a href="#features" class="text-sm font-medium text-gray-300 hover:text-white transition hidden sm:block">Features</a>
                     <a href="#faq" class="text-sm font-medium text-gray-300 hover:text-white transition hidden sm:block">FAQ</a>
-                    <a href="https://github.com/Being-Glad/takeout-fixer" target="_blank" class="text-sm font-medium text-gray-300 hover:text-white transition">GitHub</a>
+                     <!-- Donate Button in Nav -->
+                     <a href="https://buymeacoffee.com/Being_Glad" target="_blank" class="hidden sm:inline-flex items-center px-3 py-1.5 border border-yellow-500/50 text-sm font-medium rounded-md text-yellow-500 hover:bg-yellow-500/10 transition">
+                        ☕ Buy me a coffee
+                    </a>
                      <a href="#desktop-app" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition">
                         Get Desktop App
                     </a>
@@ -65,7 +71,7 @@
         <!-- Hero Section -->
         <div class="relative overflow-hidden pt-16 pb-24 text-center">
              <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- Hero Logo (Larger) -->
+                <!-- Hero Logo (h-24 w-24 = 96px) -->
                 <svg class="h-24 w-24 mx-auto mb-8" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="100" height="100" rx="20" fill="#18181b"/>
                     <rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/>
@@ -91,16 +97,15 @@
         </div>
 
         <!-- Features Grid -->
-        <div id="features" class="py-16 bg-gray-900/50 border-y border-gray-800">
+        <div id="features" class="py-16 bg-gray-900">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
                     <h2 class="text-base font-semibold text-indigo-400 tracking-wide uppercase">Features</h2>
                     <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-white sm:text-4xl">What We Fix</p>
                 </div>
                 <div class="grid grid-cols-1 gap-8 sm:grid-cols-3">
-                    <!-- Feature 1 -->
                     <div class="pt-6">
-                        <div class="flow-root bg-gray-800/50 rounded-xl px-6 pb-8 h-full border border-gray-700 hover:border-indigo-500/50 transition duration-300">
+                        <div class="flow-root bg-gray-800 rounded-xl px-6 pb-8 h-full border border-gray-700">
                             <div class="-mt-6">
                                 <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-xl shadow-lg">
                                     <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -110,9 +115,8 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Feature 2 -->
                     <div class="pt-6">
-                         <div class="flow-root bg-gray-800/50 rounded-xl px-6 pb-8 h-full border border-gray-700 hover:border-indigo-500/50 transition duration-300">
+                         <div class="flow-root bg-gray-800 rounded-xl px-6 pb-8 h-full border border-gray-700">
                             <div class="-mt-6">
                                 <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-xl shadow-lg">
                                     <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
@@ -122,9 +126,8 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Feature 3 -->
                     <div class="pt-6">
-                        <div class="flow-root bg-gray-800/50 rounded-xl px-6 pb-8 h-full border border-gray-700 hover:border-indigo-500/50 transition duration-300">
+                        <div class="flow-root bg-gray-800 rounded-xl px-6 pb-8 h-full border border-gray-700">
                              <div class="-mt-6">
                                 <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-xl shadow-lg">
                                     <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
@@ -142,156 +145,170 @@
         <div id="quick-fix" class="py-24">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-800">
-                    <!-- App Header -->
-                    <div class="bg-gray-800/80 px-6 py-4 border-b border-gray-700 flex items-center">
-                         <div class="flex space-x-2 mr-4"><div class="h-3 w-3 bg-red-500 rounded-full"></div><div class="h-3 w-3 bg-yellow-500 rounded-full"></div><div class="h-3 w-3 bg-green-500 rounded-full"></div></div>
-                        <h2 class="text-sm font-semibold text-gray-300 flex items-center">
-                             <svg class="h-4 w-4 mr-2 opacity-70" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="20" fill="#18181b"/><rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/><rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/><rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/></svg>
+                    <!-- Header -->
+                    <div class="bg-gray-800 px-6 py-4 border-b border-gray-700 flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-white flex items-center">
+                             <svg class="h-5 w-5 mr-2" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="20" fill="#18181b"/><rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/><rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/><rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/></svg>
                             Quick-Fix · On the Go
                         </h2>
+                        <!-- Start Over Button (Initially Hidden) -->
+                        <button id="header-reset-btn" class="hidden text-sm text-gray-400 hover:text-white transition flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Start Over
+                        </button>
                     </div>
 
-                    <div class="p-6 sm:p-8 space-y-6 bg-gray-950">
-                        <!-- Info Banner -->
-                        <div class="bg-indigo-900/20 border-l-4 border-indigo-500 p-4 rounded-r-lg flex">
+                    <div class="p-6 sm:p-8 space-y-6">
+                        <div class="bg-indigo-900/30 border-l-4 border-indigo-500 p-4 rounded-r-lg flex">
                             <svg class="h-5 w-5 text-indigo-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
                             <div class="ml-3 text-sm text-indigo-200">This lite version is for <span class="font-semibold text-white">quick jobs under 5GB</span>. It fixes the "Date Modified" for sorting. For permanent EXIF data, use the Desktop App below.</div>
                         </div>
 
-                        <!-- Upload Zone -->
-                        <div id="upload-section" class="drop-zone rounded-xl p-12 text-center cursor-pointer hover:bg-gray-900 transition group border-dashed border-2 border-gray-700 hover:border-indigo-500/50">
+                        <div id="upload-section" class="drop-zone rounded-xl p-10 text-center cursor-pointer hover:bg-gray-800/50 transition group">
                             <input type="file" id="fileInput" class="hidden" webkitdirectory directory multiple />
                             <div class="space-y-4 pointer-events-none">
-                                <svg class="mx-auto h-16 w-16 text-gray-600 group-hover:text-indigo-400 transition duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
-                                <div class="text-gray-300 text-xl"><span class="font-semibold text-indigo-400">Click to select</span> or drag your Takeout folder here</div>
-                                <p class="text-sm text-gray-500">Supports folder containing photos and JSON files</p>
+                                <svg class="mx-auto h-16 w-16 text-gray-500 group-hover:text-indigo-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                                <div class="text-gray-300 text-lg"><span class="font-semibold text-indigo-400">Click to select</span> or drag your Takeout folder here</div>
+                                <p class="text-sm text-gray-500">Supports .zip contents (unzipped)</p>
                             </div>
                         </div>
 
-                        <!-- Results Section (Hidden initially) -->
-                        <div id="results-section" class="hidden space-y-6 animate-fade-in">
-                            <div class="bg-green-500/10 border border-green-500/30 rounded-lg p-4 flex items-start">
-                                 <svg class="h-6 w-6 text-green-400 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                <div><h3 class="text-lg font-medium text-green-400">Processing Complete!</h3><p class="text-green-300/70 mt-1 text-sm" id="results-summary"></p></div>
+                        <div id="results-section" class="hidden space-y-6">
+                            <div class="bg-green-900/20 border border-green-900 rounded-lg p-4 flex items-start">
+                                 <svg class="h-6 w-6 text-green-500 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <div><h3 class="text-lg font-medium text-green-400">Processing Complete!</h3><p class="text-green-300/80 mt-1" id="results-summary"></p></div>
                             </div>
-                             <!-- Donation Prompt -->
-                             <div class="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border border-yellow-700/30 rounded-lg p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                <div class="flex items-center"><span class="text-2xl mr-3">☕</span><p class="text-yellow-200/80 text-sm">If this tool saved you time, please consider supporting its development.</p></div>
-                                <a href="https://buymeacoffee.com/Being_Glad" target="_blank" class="whitespace-nowrap bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-semibold py-2 px-4 rounded-md transition">Fuel Future Development</a>
+                             <!-- Donation Prompt (Shown after processing) -->
+                             <div class="bg-gradient-to-r from-yellow-600/20 to-orange-600/20 border border-yellow-500/30 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                                <div class="flex items-center"><span class="text-3xl mr-4">☕</span><div><h4 class="text-white font-semibold">Saved you time?</h4><p class="text-yellow-200/80 text-sm">Consider supporting future development to keep this tool free forever.</p></div></div>
+                                <a href="https://buymeacoffee.com/Being_Glad" target="_blank" class="whitespace-nowrap bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-3 px-6 rounded-xl transition shadow-lg shadow-yellow-500/20">Fuel Future Development</a>
                             </div>
-                            <!-- Download Buttons Container -->
-                            <div id="download-buttons" class="grid grid-cols-1 gap-3"></div>
+                            <div id="download-buttons" class="space-y-4"></div>
                         </div>
 
-                        <!-- Log Accordion -->
                         <div id="log-accordion" class="border border-gray-800 rounded-lg overflow-hidden hidden">
-                            <button id="log-toggle" class="w-full px-4 py-3 bg-gray-900 hover:bg-gray-800 transition flex justify-between items-center text-left text-sm font-medium text-gray-400">
+                            <button id="log-toggle" class="w-full px-4 py-3 bg-gray-800/50 flex justify-between items-center text-left text-sm font-medium text-gray-300 hover:bg-gray-800 transition">
                                 <span>Show Processing Log</span>
-                                <svg class="rotate-icon h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                <svg class="rotate-icon h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                             </button>
-                             <div id="log-content" class="accordion-content bg-black"><div id="processing-log" class="p-4 font-mono text-xs text-gray-500 h-64 overflow-y-auto leading-relaxed"></div></div>
+                             <div id="log-content" class="accordion-content bg-black"><div id="processing-log" class="p-4 font-mono text-xs text-gray-400 h-64 overflow-y-auto"></div></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Testimonials Section -->
-        <section class="py-20 bg-gray-900/50 border-t border-gray-800">
+        <!-- Testimonials -->
+        <section class="py-16 bg-gray-900 border-t border-gray-800">
              <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 class="text-3xl font-extrabold text-white mb-12">Trusted by Users</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                    <div class="bg-gray-800/50 p-8 rounded-2xl border border-gray-700 relative">
-                        <svg class="h-8 w-8 text-indigo-500/30 absolute top-6 left-6 transform -scale-x-100" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.570 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
-                        <p class="text-gray-300 italic relative z-10 pt-4">"I had 50GB of photos completely messed up. This tool fixed them all in minutes. Incredible."</p>
-                        <div class="mt-6 font-medium text-white">— Sarah K.</div>
-                    </div>
-                    <div class="bg-gray-800/50 p-8 rounded-2xl border border-gray-700 relative">
-                         <svg class="h-8 w-8 text-indigo-500/30 absolute top-6 left-6 transform -scale-x-100" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.570 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
-                        <p class="text-gray-300 italic relative z-10 pt-4">"Better than the paid alternatives. The desktop app wrote the actual EXIF data back. Lifesaver!"</p>
-                        <div class="mt-6 font-medium text-white">— Mike D.</div>
-                    </div>
-                    <div class="bg-gray-800/50 p-8 rounded-2xl border border-gray-700 relative">
-                         <svg class="h-8 w-8 text-indigo-500/30 absolute top-6 left-6 transform -scale-x-100" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.570 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
-                        <p class="text-gray-300 italic relative z-10 pt-4">"Simple, fast, and free. It just works. Highly recommended for anyone leaving Google Photos."</p>
-                        <div class="mt-6 font-medium text-white">— Alex R.</div>
-                    </div>
+                <h2 class="text-3xl font-extrabold text-white mb-8">Trusted by Users</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-700"><p class="text-gray-300 italic">"I had 50GB of photos completely messed up. This tool fixed them all in minutes. Incredible work."</p><div class="mt-4 font-medium text-white">— Sarah K.</div></div>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-700"><p class="text-gray-300 italic">"Better than the paid alternatives. The desktop app wrote the actual EXIF data back. Lifesaver!"</p><div class="mt-4 font-medium text-white">— Mike D.</div></div>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-700"><p class="text-gray-300 italic">"Simple, fast, and free. It just works. Highly recommended for anyone leaving Google Photos."</p><div class="mt-4 font-medium text-white">— Alex R.</div></div>
                 </div>
-                <a href="https://github.com/Being-Glad/takeout-fixer/issues/new" target="_blank" class="inline-flex items-center text-indigo-400 hover:text-indigo-300 font-medium transition">
-                    Share your feedback on GitHub <svg class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                </a>
+                <a href="https://github.com/Being-Glad/takeout-fixer/issues/new" target="_blank" class="text-indigo-400 hover:text-indigo-300 font-medium flex items-center justify-center">Share your feedback on GitHub <span aria-hidden="true" class="ml-1">→</span></a>
             </div>
         </section>
 
-        <!-- Desktop App Downloads -->
+        <!-- Downloads Section -->
         <div id="desktop-app" class="py-24">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                 <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Get the Full-Power Desktop App</h2>
-                <p class="text-lg sm:text-xl text-gray-400 mb-12 max-w-2xl mx-auto">No size limits. Permanent EXIF & GPS fixes. Runs entirely offline.</p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                 <h2 class="text-4xl font-extrabold text-white mb-4">Get the Full-Power Desktop App</h2>
+                <p class="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">No size limits. Permanent EXIF & GPS fixes. Runs entirely offline.</p>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
                      <!-- Windows Button -->
-                    <a href="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.exe" class="group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-xl hover:border-indigo-500 transition h-32">
-                        <span class="text-gray-400 font-medium text-sm mb-1 group-hover:text-indigo-300 transition">Download for</span>
-                        <span class="text-white text-xl font-bold">Windows</span>
-                    </a>
+                    <button data-download-url="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.exe" class="desktop-download-btn group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-2xl hover:border-indigo-500 transition w-64 h-32 cursor-pointer">
+                        <span class="text-gray-400 font-medium text-sm mb-2">Download for</span>
+                        <span class="text-white text-2xl font-bold group-hover:text-indigo-300 transition">Windows</span>
+                    </button>
                     <!-- Linux Button -->
-                    <a href="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.AppImage" class="group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-xl hover:border-indigo-500 transition h-32">
-                        <span class="text-gray-400 font-medium text-sm mb-1 group-hover:text-indigo-300 transition">Download for</span>
-                        <span class="text-white text-xl font-bold">Linux</span>
-                    </a>
+                    <button data-download-url="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.AppImage" class="desktop-download-btn group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-2xl hover:border-indigo-500 transition w-64 h-32 cursor-pointer">
+                        <span class="text-gray-400 font-medium text-sm mb-2">Download for</span>
+                        <span class="text-white text-2xl font-bold group-hover:text-indigo-300 transition">Linux</span>
+                    </button>
                     <!-- Mac Button -->
-                    <a href="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.dmg" class="group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-xl hover:border-indigo-500 transition h-32">
-                        <span class="text-gray-400 font-medium text-sm mb-1 group-hover:text-indigo-300 transition">Download for</span>
-                        <span class="text-white text-base sm:text-lg font-bold">Mac (Universal)</span>
-                    </a>
+                    <button data-download-url="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.dmg" class="desktop-download-btn group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-2xl hover:border-indigo-500 transition w-64 h-32 cursor-pointer">
+                        <span class="text-gray-400 font-medium text-sm mb-2">Download for</span>
+                        <span class="text-white text-lg font-bold group-hover:text-indigo-300 transition">Mac (Universal)</span>
+                    </button>
                 </div>
-                <p class="mt-8 text-gray-500 text-sm">Version 1.0 • 100% Free & Open Source</p>
+                <p class="mt-8 text-gray-500">Version 1.0 • 100% Free & Open Source</p>
             </div>
         </div>
 
-        <!-- FAQ Section -->
-        <section id="faq" class="py-20 bg-gray-900/50 border-t border-gray-800">
+        <!-- FAQ -->
+        <section id="faq" class="py-16 bg-gray-900 border-t border-gray-800">
              <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="text-3xl font-extrabold text-white text-center mb-12">Frequently Asked Questions</h2>
                 <div class="space-y-4">
-                    <!-- FAQ Item 1 -->
-                    <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 transition-all hover:border-gray-600">
-                        <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-base sm:text-lg font-medium text-white">Why do I need this?</span><svg class="h-5 w-5 text-gray-500 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                        <div class="faq-content hidden px-6 pb-6 text-gray-400 leading-relaxed">Google Takeout separates metadata (date, location) into JSON files. This tool reads them and puts the correct info back, so your photos don't all show today's date.</div>
+                    <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+                        <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Why do I need this?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">Google Takeout separates metadata (date, location) into JSON files. This tool reads them and puts the correct info back, so your photos don't all show today's date in your gallery.</div>
                     </div>
-                    <!-- FAQ Item 2 -->
-                    <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 transition-all hover:border-gray-600">
-                        <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-base sm:text-lg font-medium text-white">Is it safe?</span><svg class="h-5 w-5 text-gray-500 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                        <div class="faq-content hidden px-6 pb-6 text-gray-400 leading-relaxed">Yes. It is 100% safe. All processing happens <span class="font-semibold text-indigo-300">entirely on your device</span>. Your photos never leave your computer.</div>
+                    <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+                        <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Is it safe?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">Yes. It is 100% safe. All processing happens <span class="font-semibold text-white">entirely on your device</span>. Your photos never leave your computer. The code is open-source for transparency.</div>
                     </div>
-                    <!-- FAQ Item 3 -->
-                    <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 transition-all hover:border-gray-600">
-                        <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-base sm:text-lg font-medium text-white">Web App vs Desktop App?</span><svg class="h-5 w-5 text-gray-500 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                        <div class="faq-content hidden px-6 pb-6 text-gray-400 leading-relaxed">The <span class="font-semibold text-indigo-300">Quick-Fix (Web)</span> app is for small batches (<5GB) and only fixes sorting dates. The <span class="font-semibold text-indigo-300">Desktop App</span> has unlimited size and permanently writes true EXIF/GPS data.</div>
+                    <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+                        <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Web App vs Desktop App?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">The <span class="font-semibold text-white">Quick-Fix (Web)</span> app is for small batches (<5GB) and only fixes sorting dates. The <span class="font-semibold text-white">Desktop App</span> has unlimited size and permanently writes true EXIF/GPS data into the files themselves.</div>
                     </div>
-                    <!-- New FAQ 4 -->
-                    <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 transition-all hover:border-gray-600">
-                         <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-base sm:text-lg font-medium text-white">Will this create duplicates?</span><svg class="h-5 w-5 text-gray-500 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                        <div class="faq-content hidden px-6 pb-6 text-gray-400 leading-relaxed">The Desktop App modifies files <span class="font-semibold text-indigo-300">in-place</span>, so no duplicates are created. The Web App creates a new zip file with your fixed photos.</div>
+                    <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+                        <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Will this create duplicates?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">The Desktop App modifies files <span class="font-semibold text-white">in-place</span>, so NO duplicates are created. The Web App creates a new zip file with your fixed photos, leaving your originals untouched.</div>
                     </div>
-                    <!-- New FAQ 5 -->
-                    <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 transition-all hover:border-gray-600">
-                         <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-base sm:text-lg font-medium text-white">Will this work with Apple Photos?</span><svg class="h-5 w-5 text-gray-500 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                        <div class="faq-content hidden px-6 pb-6 text-gray-400 leading-relaxed">Yes! Once you process your files with the <span class="font-semibold text-indigo-300">Desktop App</span>, you can import them into Apple Photos, and they will appear in the correct chronological order with locations.</div>
+                     <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+                        <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Works with Apple Photos?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">Yes! Use the <span class="font-semibold text-white">Desktop App</span> to process your files first. Then, when you import them into Apple Photos, they will appear in the correct chronological order with all location data intact.</div>
+                    </div>
+                    <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+                        <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">How fast is it?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">Extremely fast. It can process thousands of photos per minute because it runs locally on your computer's full power, not on a slow server.</div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="bg-black py-8 text-center text-gray-600 text-sm border-t border-gray-900">
-            <p>Created with <span class="text-purple-500">💜</span> by <a href="https://github.com/Being-Glad" class="hover:text-indigo-400 transition" target="_blank">Being_Glad</a>. Not affiliated with Google.</p>
+        <footer class="bg-black py-8 text-center text-gray-500 text-sm">
+            <p>Created with 💜 by <a href="https://github.com/Being-Glad" class="hover:text-indigo-400 transition">Being_Glad</a>. Not affiliated with Google.</p>
         </footer>
+
+        <!-- Interstitial Donation Modal -->
+        <div id="download-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in">
+            <div class="bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-md mx-4 border border-gray-700 relative">
+                 <!-- Close Button -->
+                 <button id="modal-close" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <div class="text-center">
+                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-900/30 mb-6">
+                        <span class="text-4xl">🎉</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Ready to Download!</h3>
+                    <p class="text-gray-400 mb-8">
+                        If this tool saved you time, please consider supporting its development to keep it free forever.
+                    </p>
+                    <div class="space-y-3">
+                        <button id="donate-download-btn" class="w-full flex items-center justify-center px-4 py-3 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded-xl transition">
+                            <span class="mr-2">☕</span> Donate & Download
+                        </button>
+                        <button id="just-download-btn" class="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold rounded-xl transition">
+                            No thanks, just download
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </main>
 
     <script>
-        // --- FAQ Toggle Logic ---
+        // FAQ Toggles
         document.querySelectorAll('.faq-toggle').forEach(button => {
             button.addEventListener('click', () => {
                 const content = button.nextElementSibling;
@@ -300,18 +317,68 @@
             });
         });
 
-        // --- Log Accordion Logic ---
+        // Log Toggles
         const logToggle = document.getElementById('log-toggle');
         const logAccordion = document.getElementById('log-accordion');
         logToggle.addEventListener('click', () => {
             logAccordion.classList.toggle('accordion-open');
-            const isHidden = !logAccordion.classList.contains('accordion-open');
-            logToggle.querySelector('span').textContent = isHidden ? 'Show Processing Log' : 'Hide Processing Log';
+            logToggle.querySelector('span').textContent = logAccordion.classList.contains('accordion-open') ? 'Hide Processing Log' : 'Show Processing Log';
         });
 
-        // --- Drag & Drop Logic ---
+        // Start Over / Reset
+        const headerResetBtn = document.getElementById('header-reset-btn');
+        headerResetBtn.addEventListener('click', resetApp);
+        function resetApp() {
+            uploadSection.classList.remove('hidden');
+            resultsSection.classList.add('hidden');
+            logAccordion.classList.add('hidden'); logAccordion.classList.remove('accordion-open');
+            headerResetBtn.classList.add('hidden');
+            fileInput.value = '';
+        }
+
+        // --- MODAL LOGIC START ---
+        const downloadModal = document.getElementById('download-modal');
+        const donateDownloadBtn = document.getElementById('donate-download-btn');
+        const justDownloadBtn = document.getElementById('just-download-btn');
+        const modalCloseBtn = document.getElementById('modal-close');
+        let pendingAction = null;
+
+        function showDownloadModal(action) {
+            pendingAction = action;
+            downloadModal.classList.remove('hidden');
+        }
+        function hideDownloadModal() {
+            downloadModal.classList.add('hidden');
+            pendingAction = null;
+        }
+        modalCloseBtn.addEventListener('click', hideDownloadModal); // Close button handler
+        donateDownloadBtn.addEventListener('click', () => {
+            window.open('https://buymeacoffee.com/Being_Glad', '_blank');
+            if (pendingAction) pendingAction();
+            hideDownloadModal();
+        });
+        justDownloadBtn.addEventListener('click', () => {
+            if (pendingAction) pendingAction();
+            hideDownloadModal();
+        });
+        // Desktop Download Buttons Hook
+        document.querySelectorAll('.desktop-download-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const url = btn.getAttribute('data-download-url');
+                showDownloadModal(() => window.location.href = url);
+            });
+        });
+        // --- MODAL LOGIC END ---
+
+        // Web App Logic
         const dropZone = document.getElementById('upload-section');
         const fileInput = document.getElementById('fileInput');
+        const logContainer = document.getElementById('processing-log');
+        const resultsSection = document.getElementById('results-section');
+        const uploadSection = document.getElementById('upload-section');
+        const downloadButtons = document.getElementById('download-buttons');
+        const resultsSummary = document.getElementById('results-summary');
+        const FIVE_GB = 5 * 1024 * 1024 * 1024;
 
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, preventDefaults, false);
@@ -323,26 +390,20 @@
         ['dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, unhighlight, false);
         });
-        function highlight(e) { dropZone.classList.add('border-indigo-500', 'bg-gray-800/50'); }
-        function unhighlight(e) { dropZone.classList.remove('border-indigo-500', 'bg-gray-800/50'); }
+        function highlight(e) { dropZone.classList.add('active'); }
+        function unhighlight(e) { dropZone.classList.remove('active'); }
 
         dropZone.addEventListener('drop', handleDrop, false);
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFiles);
+
         function handleDrop(e) {
             const dt = e.dataTransfer;
             const files = dt.files;
             if (files.length > 0) handleFiles({ target: { files: files } });
         }
-        dropZone.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', handleFiles);
 
-        // --- Core Processing Logic ---
-        const logContainer = document.getElementById('processing-log');
-        const resultsSection = document.getElementById('results-section');
-        const uploadSection = document.getElementById('upload-section');
-        const downloadButtons = document.getElementById('download-buttons');
-        const resultsSummary = document.getElementById('results-summary');
-        const FIVE_GB = 5 * 1024 * 1024 * 1024;
-
+        let fileMap = new Map();
         let mediaFileStore = new Map();
         let rootFolderName = 'Takeout';
 
@@ -350,31 +411,28 @@
             const files = event.target.files;
             if (files.length === 0) return;
 
-            // UI State: Processing
             uploadSection.classList.add('hidden');
             resultsSection.classList.add('hidden');
             logAccordion.classList.remove('hidden');
-            // Auto-open log if it's closed
+            headerResetBtn.classList.remove('hidden'); // Show Start Over
             if (!logAccordion.classList.contains('accordion-open')) {
-                logToggle.click();
+                logToggle.click(); 
             }
-
-            logContainer.innerHTML = ''; // Clear previous logs
+            
+            logContainer.innerHTML = '';
             downloadButtons.innerHTML = '';
-            log('Starting analysis...');
+            log('Starting analysis of your Takeout folder...');
 
-            let fileMap = new Map();
+            fileMap.clear();
             mediaFileStore.clear();
             let mediaFiles = [];
             let jsonFiles = [];
             let totalSize = 0;
-
+            
             rootFolderName = files[0].webkitRelativePath.split('/')[0] || 'Takeout';
 
-            // Approved media extensions
             const mediaExts = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'tiff', 'mov', 'mp4', 'avi', 'mkv', '3gp']);
 
-            // 1. Scan all files
             for (const file of files) {
                 totalSize += file.size;
                 const ext = file.name.split('.').pop()?.toLowerCase();
@@ -386,183 +444,215 @@
                 }
             }
 
-            // 2. Check Size Limit
             if (totalSize > FIVE_GB) {
-                log('ERROR: Total size is > 5GB. Please use the Desktop App for unlimited size.', 'error');
-                alert("Your folder is over 5GB. Please use the Desktop App for faster, unlimited processing.");
-                uploadSection.classList.remove('hidden'); // Show upload again
+                log('ERROR: Total folder size is > 5GB. Please use the Desktop App.', 'error');
+                alert("Your folder is over 5GB. Please use the Desktop App for unlimited size.");
+                resetApp(); // Auto-reset on error
                 return;
             }
 
             log(`Found ${mediaFiles.length} media files and ${jsonFiles.length} JSON metadata files.`);
 
-            // 3. Parse JSONs
-            log('Parsing metadata...');
             for (const file of jsonFiles) {
                 try {
                     const text = await file.text();
                     const data = JSON.parse(text);
                     const timestamp = data.photoTakenTime?.timestamp || data.creationTime?.timestamp;
                     if (timestamp) {
-                         // Store by full relative path for accurate matching in nested folders
-                         fileMap.set(normalizePath(file.webkitRelativePath), timestamp);
+                        fileMap.set(normalizePath(file.webkitRelativePath), { timestamp: parseInt(timestamp) });
                     }
-                } catch (e) {
-                    // Ignore unparseable JSONs
-                }
+                } catch (e) { /* ignore bad json */ }
             }
+            log(`Successfully parsed metadata from ${fileMap.size} JSON files.`);
 
-            // 4. Match & Fix
-            log('Matching files to metadata...');
-            let fixedFilesMap = new Map();
-            let fixedCount = 0;
+            let fixedFiles = new Map();
             let skippedCount = 0;
+            let fixedCount = 0;
 
             for (const mediaFile of mediaFiles) {
-                // Try to find matching JSON
-                // Strategy: Look for a JSON with the same path + .json, or similar variations
-                let timestampStr = findMatchingMetadata(mediaFile.webkitRelativePath, fileMap);
-                let timestampMs = null;
+                const relativePath = mediaFile.webkitRelativePath;
+                const key = normalizePath(relativePath);
+                let timestamp = null;
 
-                if (timestampStr) {
-                    timestampMs = parseInt(timestampStr) * 1000;
+                if (fileMap.has(key)) {
+                    timestamp = fileMap.get(key).timestamp;
                 } else {
-                    // Fallback: Try to parse date from filename
-                    timestampMs = parseTimestampFromFilename(mediaFile.name);
+                    const dateFromFilename = parseDateFromFilename(mediaFile.name);
+                    if (dateFromFilename) {
+                        timestamp = Math.floor(dateFromFilename.getTime() / 1000);
+                    }
                 }
 
-                if (timestampMs && !isNaN(timestampMs)) {
-                    // Determine subfolder for zip organization
-                    const pathParts = mediaFile.webkitRelativePath.split('/');
-                    let folder = 'root';
-                     if (pathParts.length > 2) {
-                        folder = pathParts[1]; // e.g. 'Takeout/2023/pic.jpg' -> '2023'
-                    }
+                const pathParts = relativePath.split('/');
+                let folderName = 'root';
+                if (pathParts.length > 2) {
+                    folderName = pathParts[1];
+                }
 
-                    if (!fixedFilesMap.has(folder)) {
-                        fixedFilesMap.set(folder, []);
-                    }
-                    fixedFilesMap.get(folder).push({ path: mediaFile.webkitRelativePath, newDate: timestampMs });
+                if (!fixedFiles.has(folderName)) {
+                    fixedFiles.set(folderName, []);
+                }
+
+                if (timestamp) {
+                    fixedFiles.get(folderName).push({ path: relativePath, newDate: timestamp * 1000, skipped: false });
                     fixedCount++;
                 } else {
+                    fixedFiles.get(folderName).push({ path: relativePath, skipped: true });
                     skippedCount++;
-                    log(`Skipped: ${mediaFile.name} (No date found)`, 'warn');
+                    log(`Skipped (no date found): ${mediaFile.name}`, 'warn');
                 }
             }
 
-            // 5. Finalize
-            log(`Processing complete. ${fixedCount} files fixed, ${skippedCount} skipped.`, 'success');
-
-            // Auto-close log and show results
-            if (logAccordion.classList.contains('accordion-open')) {
-                 setTimeout(() => logToggle.click(), 1000); // Small delay for user to see "complete"
+            log(`Processing complete! ${fixedCount} files matched. ${skippedCount} files skipped (will be included in '_SKIPPED' folders).`, 'success');
+            resultsSummary.textContent = `Success! ${fixedCount} files matched. ${skippedCount} skipped files will be included in a separate folder.`;
+            
+            if (fixedCount > 0 || skippedCount > 0) {
+                displayDownloadButtons(fixedFiles);
+            } else {
+                 log('No files could be processed.', 'error');
             }
+        }
 
-            resultsSummary.textContent = `Successfully processed ${fixedCount} photos & videos. Ready for download.`;
+        function displayDownloadButtons(folderMap) {
             resultsSection.classList.remove('hidden');
-            createDownloadButtons(fixedFilesMap);
-        }
+            
+            // 1. Create MASTER download button first
+            const masterBtn = createDownloadButton(`${rootFolderName}-Fixed.zip`, `Download All Folders (${mediaFileStore.size} files)`, true);
+            masterBtn.onclick = () => showDownloadModal(() => downloadFolder(folderMap, `${rootFolderName}-Fixed.zip`, masterBtn));
+            downloadButtons.appendChild(masterBtn);
 
-        // --- Helper Functions ---
-        function normalizePath(path) {
-            // Removes .json extension and handles duplicates like (1)
-            return path.toLowerCase().replace(/\.json$/, '').replace(/\(\d+\)/, '').trim();
-        }
+            // If there's only one folder (e.g. 'root' or just one year), don't show subsets
+            if (folderMap.size <= 1) return;
 
-        function findMatchingMetadata(mediaPath, fileMap) {
-             // 1. Exact match (e.g., photo.jpg matches photo.jpg.json)
-             let normalizedMedia = normalizePath(mediaPath);
-             if (fileMap.has(normalizedMedia)) return fileMap.get(normalizedMedia);
+            // 2. Create Separator
+            const separator = document.createElement('div');
+            separator.className = "flex items-center py-4";
+            separator.innerHTML = '<div class="flex-grow h-px bg-gray-700"></div><span class="flex-shrink-0 text-gray-500 px-4 text-sm font-medium">OR DOWNLOAD INDIVIDUALLY</span><div class="flex-grow h-px bg-gray-700"></div>';
+            downloadButtons.appendChild(separator);
 
-             // 2. Try with .supplemental-metadata.json suffix seems common in Takeout
-             // (Already handled if we normalized the JSON keys correctly upon insertion, but good as backup)
+            // 3. Create SUBSET buttons
+            // Sort folders by name (usually years, so reverse sort is nice)
+            const sortedFolders = Array.from(folderMap.keys()).sort().reverse();
 
-             // 3. Try matching base filename without extension
-             // e.g., image.HEIC might match image.json instead of image.HEIC.json
-             let base = normalizedMedia.substring(0, normalizedMedia.lastIndexOf('.'));
-             if (fileMap.has(base)) return fileMap.get(base);
+            for (const folderName of sortedFolders) {
+                if (folderName === 'root' && folderMap.size > 1 && folderMap.get('root').length === 0) continue;
 
-             return null;
-        }
-
-        function parseTimestampFromFilename(filename) {
-            // Matches YYYYMMDD_HHMMSS or YYYY-MM-DD patterns
-            let match = filename.match(/(\d{4})[_-]?(\d{2})[_-]?(\d{2})[_-]?(\d{2})[_-]?(\d{2})[_-]?(\d{2})/);
-            if (match) {
-                return new Date(Date.UTC(+match[1], +match[2]-1, +match[3], +match[4], +match[5], +match[6])).getTime();
+                const files = folderMap.get(folderName);
+                const btn = createDownloadButton(`${folderName}.zip`, `Download ${folderName} (${files.length} files)`, false);
+                const singleFolderMap = new Map([[folderName, files]]);
+                // Hook up to modal
+                btn.onclick = () => showDownloadModal(() => downloadFolder(singleFolderMap, `${folderName}.zip`, btn));
+                downloadButtons.appendChild(btn);
             }
-            match = filename.match(/(\d{4})[_-]?(\d{2})[_-]?(\d{2})/);
-            if (match) {
-                 return new Date(Date.UTC(+match[1], +match[2]-1, +match[3])).getTime();
-            }
-            return null;
         }
 
-        function log(msg, type = 'info') {
-            const p = document.createElement('p');
-            p.className = type === 'error' ? 'text-red-400 font-bold' : type === 'success' ? 'text-green-400 font-bold' : type === 'warn' ? 'text-yellow-400' : '';
-            p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-            logContainer.prepend(p);
-        }
-
-        function createDownloadButtons(folderMap) {
-             // Logic to create "Download All" or individual folder buttons
-             if (folderMap.size > 1 || (folderMap.size === 1 && !folderMap.has('root'))) {
-                  // Nested folders exist
-                  const allBtn = createBtn(`Download All (${rootFolderName}.zip)`, () => downloadZip(folderMap, `${rootFolderName}-Fixed.zip`, allBtn));
-                  downloadButtons.appendChild(allBtn);
-                  // Optional: Separator or label for individual folders could go here
-             }
-
-             // Individual folder buttons
-             for (const [folder, files] of folderMap.entries()) {
-                 const label = folder === 'root' ? `Download ${rootFolderName} files` : `Download ${folder}.zip`;
-                 const filename = folder === 'root' ? `${rootFolderName}-Root-Fixed.zip` : `${folder}-Fixed.zip`;
-                 // Create a mini-map just for this folder to reuse the downloadZip function
-                 const singleMap = new Map([[folder, files]]);
-                 const btn = createBtn(`${label} (${files.length} files)`, () => downloadZip(singleMap, filename, btn), true); // True for secondary style
-                 downloadButtons.appendChild(btn);
-             }
-        }
-
-        function createBtn(text, onClick, isSecondary = false) {
+        function createDownloadButton(fileName, text, isMaster) {
             const btn = document.createElement('button');
-            btn.className = `w-full py-3 px-4 rounded-lg font-semibold transition ${isSecondary ? 'bg-gray-800 text-indigo-300 hover:bg-gray-700' : 'bg-green-600 text-white hover:bg-green-500'} flex justify-center items-center`;
-            btn.textContent = text;
-            btn.onclick = onClick;
+            // Master button gets primary green, subsets get a slightly different shade/style if desired, currently sharing same base green
+            btn.className = `w-full flex items-center justify-center px-6 py-4 ${isMaster ? 'bg-green-600 hover:bg-green-500 text-white font-bold text-lg' : 'bg-green-600/80 hover:bg-green-500/80 text-white font-semibold'} rounded-xl transition shadow-lg`;
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> ${text}`;
             return btn;
         }
 
-        async function downloadZip(mapToZip, filename, btn) {
-            const origText = btn.textContent;
+        async function downloadFolder(folderMap, zipName, btn) {
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Zipping...';
             btn.disabled = true;
-            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Zipping...`;
+            log(`Zipping ${zipName}... this may take a while for large folders.`);
+            
+            const zip = new JSZip();
+            
+            for (const [folderName, files] of folderMap.entries()) {
+                for (const fileData of files) {
+                    const originalFile = mediaFileStore.get(fileData.path);
+                    if (originalFile) {
+                        let zipPath = originalFile.webkitRelativePath;
+                        // Remove the root folder name from the path for cleaner zips
+                        const firstSlash = zipPath.indexOf('/');
+                        if (firstSlash !== -1) zipPath = zipPath.substring(firstSlash + 1);
 
-            try {
-                const zip = new JSZip();
-                for (const [folder, files] of mapToZip.entries()) {
-                    for (const fileData of files) {
-                        const file = mediaFileStore.get(fileData.path);
-                        // Clean up path for zip: remove root folder name if it's there
-                        let zipPath = file.webkitRelativePath.substring(file.webkitRelativePath.indexOf('/') + 1);
-                         // If we are only downloading one subfolder, we might want to flatten it, but standard is to keep structure relative to selection.
-                         // Let's keep it simple and just use the relative path minus the very top root.
-                        zip.file(zipPath, file, { date: new Date(fileData.newDate), binary: true });
+                        if (fileData.skipped) {
+                            // Move skipped files into a _SKIPPED subfolder
+                            const parts = zipPath.split('/');
+                            const fileName = parts.pop();
+                            zipPath = [...parts, '_SKIPPED', fileName].join('/');
+                             zip.file(zipPath, originalFile, { binary: true }); // Keep original date
+                        } else {
+                            zip.file(zipPath, originalFile, {
+                                date: new Date(fileData.newDate),
+                                binary: true
+                            });
+                        }
                     }
                 }
+            }
+
+            try {
                 const content = await zip.generateAsync({ type: "blob" });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(content);
-                link.download = filename;
-                link.click();
-                URL.revokeObjectURL(link.href);
+                saveAs(content, zipName);
+                log(`Download started for ${zipName}`, 'success');
             } catch (e) {
-                alert("Error creating zip: " + e.message);
+                log(`Error zipping: ${e.message}`, 'error');
+                alert("An error occurred while zipping. Please try again or use the Desktop App for large files.");
             } finally {
-                btn.innerHTML = origText;
+                btn.innerHTML = originalText;
                 btn.disabled = false;
             }
         }
+        
+        // Simple saveAs shim
+        function saveAs(blob, filename) {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        function log(message, type = 'info') {
+            const p = document.createElement('p');
+            let color = 'text-gray-400';
+            if (type === 'error') color = 'text-red-400';
+            if (type === 'success') color = 'text-green-400';
+            if (type === 'warn') color = 'text-yellow-400';
+            p.className = `${color} mb-1`;
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.prepend(p);
+        }
+
+        const normalizePath = (path) => {
+            let key = path.toLowerCase().replace(/\.json$/i, '');
+             // Strip common Google Photos suffixes to find matches
+            key = key.replace(/(\(\d+\))|(_\d{13,})|(-collage)|(-cinematic)|(-remastered)|(-pop_out)|(-edited)/g, '');
+             // Strip extension from key for looser matching if needed, or keep it for strictness.
+             // Google sometimes changes extensions (jpg -> jpeg). Let's strip it for the key.
+            const lastDot = key.lastIndexOf('.');
+            if (lastDot > -1) key = key.substring(0, lastDot);
+            
+            return key.trim();
+        };
+
+        const parseDateFromFilename = (filename) => {
+             // Try standard YYYYMMDD or YYYY-MM-DD formats commonly found in Takeout
+            const regexes = [
+                /(\d{4})[-_]?(\d{2})[-_]?(\d{2})[-_]?(\d{2})[-_]?(\d{2})[-_]?(\d{2})/, // Full timestamp
+                /IMG[-_](\d{4})(\d{2})(\d{2})[-_](\d{6})/, // IMG_YYYYMMDD_HHMMSS
+                /(\d{4})[-_](\d{2})[-_](\d{2})/,  // Date only
+            ];
+            for (const regex of regexes) {
+                const match = filename.match(regex);
+                if (match) {
+                     // Basic validation: year between 1970 and current year + 1
+                    const year = parseInt(match[1]);
+                    if (year >= 1970 && year <= new Date().getFullYear() + 1) {
+                         return new Date(Date.UTC(year, parseInt(match[2]) - 1, parseInt(match[3]),
+                                                 parseInt(match[4] || 0), parseInt(match[5] || 0), parseInt(match[6] || 0)));
+                    }
+                }
+            }
+            return null;
+        };
+
     </script>
 </body>
 </html>
