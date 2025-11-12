@@ -1,277 +1,437 @@
 const { app, BrowserWindow, ipcMain, dialog, shell, nativeImage } = require('electron');
 const path = require('path');
-const fs = require('fs').promises;
-const os = require('os');
+const fs = require('fs-extra');
 const { exiftool } = require('exiftool-vendored');
+const pLimit = require('p-limit');
+const archiver = require('archiver');
+const os = require('os');
 
+// --- Global State ---
 let mainWindow;
+const isMac = process.platform === 'darwin';
+const EPOCH_ZERO_TIME = new Date(0).getTime(); // For checking against garbage "1970" dates
 
-// Fix for spaces in app name affecting exiftool config
-const appName = app.getName().replace(/\s/g, '-');
-const exiftoolConfig = path.join(os.tmpdir(), `${appName}-exiftool.config`);
-
+// --- Window Management ---
 function createWindow() {
-    // Create the browser window.
+    console.log('--- STARTING WINDOW CREATION ---');
+    
+    // ICON STRATEGY: prioritizing 'assets' for dev, 'build' for prod fallback if needed
+    let iconPath = path.join(__dirname, 'assets', 'icon.png');
+    if (!fs.existsSync(iconPath)) {
+        iconPath = path.join(__dirname, 'build', 'icon.png');
+    }
+    console.log('Looking for icon at:', iconPath);
+    let appIcon = fs.existsSync(iconPath) ? nativeImage.createFromPath(iconPath) : null;
+
     mainWindow = new BrowserWindow({
-        width: 1000,
-        height: 800,
-        minWidth: 900,
-        minHeight: 700,
-        titleBarStyle: 'hiddenInset',
+        width: 1024, height: 800, minWidth: 900, minHeight: 700,
+        titleBarStyle: isMac ? 'hiddenInset' : 'default',
+        backgroundColor: '#09090b',
+        // Match titlebar overlay to our dark theme
+        ...(isMac && { titleBarOverlay: { color: '#09090b', symbolColor: '#e5e7eb', height: 40 } }),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
+            sandbox: false,
             contextIsolation: true,
-            nodeIntegration: false
+            nodeIntegration: false,
         },
-        // Use nativeImage for robust icon loading (fixes Mac crash)
-        icon: nativeImage.createFromPath(path.join(__dirname, 'build/icon.png'))
+        icon: appIcon,
+        show: false // Don't show until ready to avoid white flash
     });
 
-    // Hide menu bar on Windows/Linux for a cleaner, native feel
-    if (process.platform !== 'darwin') {
-        mainWindow.setMenuBarVisibility(false);
+    if (isMac && appIcon) {
+        app.dock.setIcon(appIcon);
     }
 
-    // Force Dock icon on macOS (fixes missing icon in dev mode)
-    if (process.platform === 'darwin') {
-        app.dock.setIcon(nativeImage.createFromPath(path.join(__dirname, 'build/icon.png')));
+    const appHtmlPath = path.join(__dirname, 'app.html');
+    if (!fs.existsSync(appHtmlPath)) {
+        console.error('FATAL: app.html not found at', appHtmlPath);
+        return;
     }
 
-    mainWindow.loadFile('app.html');
+    mainWindow.loadFile(appHtmlPath);
+    
+    mainWindow.once('ready-to-show', () => {
+        mainWindow.show();
+    });
 }
 
-app.whenReady().then(createWindow);
-
-// Fix for macOS: Re-create window if dock icon is clicked
-app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
-    }
+app.whenReady().then(() => {
+    createWindow();
+    app.on('activate', () => {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
 });
 
-// Fix for macOS: Don't quit the app when all windows are closed
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
+    if (!isMac) {
         app.quit();
+        exiftool.end();
     }
 });
 
-// --- IPC Handlers ---
+app.on('before-quit', () => {
+    exiftool.end();
+});
+
+// --- IPC HANDLERS ---
+ipcMain.handle('get-platform', () => process.platform);
+
 ipcMain.handle('dialog:openDirectory', async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-        properties: ['openDirectory', 'multiSelections', 'openFile']
+        properties: ['openDirectory']
     });
-    if (canceled) return null;
-    return filePaths;
+    return canceled ? null : filePaths[0];
 });
 
 ipcMain.on('open-external', (event, url) => {
-    shell.openExternal(url);
+    if (url && (url.startsWith('file://') || path.isAbsolute(url))) {
+        // Open local folders in Finder/Explorer
+        shell.showItemInFolder(url.replace('file://', ''));
+    } else if (url) {
+        // Open URLs in default browser
+        shell.openExternal(url);
+    }
 });
 
-ipcMain.handle('get-platform', () => process.platform);
-
-ipcMain.on('start-processing', async (event, paths) => {
-    await processFiles(paths);
+ipcMain.on('start-processing', async (event, options) => {
+    // Wrap in try-catch to prevent main process crashes from bubbling up as red screens
+    try {
+        await processDirectory(options.paths[0], options.mode, event);
+    } catch (e) {
+        console.error('Processing Error:', e);
+        event.sender.send('add-log', `FATAL ERROR: ${e.message}`, 'error');
+        event.sender.send('processing-complete', { total: 0, fixed: 0, failed: 0 });
+    }
 });
 
-// --- Core Logic ---
-async function processFiles(paths) {
-    let mediaFiles = [];
-    let jsonFiles = new Map();
+// --- Core Processing Logic ---
 
-    async function scan(currentPath) {
-        try {
-            const stats = await fs.stat(currentPath);
-            if (stats.isDirectory()) {
-                const entries = await fs.readdir(currentPath, { withFileTypes: true });
-                for (const entry of entries) {
-                    await scan(path.join(currentPath, entry.name));
+/**
+ * Normalizes a file path to strip Google Takeout suffixes for matching.
+ */
+const normalizePath = (p) => {
+    if (!p) return '';
+    const dir = path.dirname(p);
+    let name = path.basename(p).toLowerCase();
+    
+    // Strip .json if it exists
+    if (name.endsWith('.json')) {
+        name = name.substring(0, name.length - 5);
+    }
+
+    // Strip common Google Takeout suffixes
+    name = name.replace(/(\(\d+\))|(_\d{13,})|(-collage)|(-cinematic)|(-remastered)|(-pop_out)|(-edited)/g, '').trim();
+    
+    return path.join(dir, name);
+}
+
+/**
+ * Smarter JSON finder that uses the new normalizePath logic.
+ */
+async function findJsonSidecar(filePath, allJsonFiles) {
+    const normalizedMediaKey = normalizePath(filePath);
+
+    // Find a JSON file in the map that normalizes to the same key
+    const matchingJsonPath = allJsonFiles.get(normalizedMediaKey);
+    if (matchingJsonPath) {
+        return matchingJsonPath;
+    }
+    
+    // Fallback: check for simple "file.jpg.json" if map fails
+    const simpleJsonPath = filePath + '.json';
+    if (await fs.pathExists(simpleJsonPath)) {
+        return simpleJsonPath;
+    }
+
+    return null;
+}
+
+/**
+ * Validates a date is reasonable.
+ * Allows 1970, but rejects the *specific* 1970-01-01 (timestamp 0)
+ */
+const MIN_VALID_YEAR = 1970; // Allow 1970s dates
+const MAX_VALID_YEAR = new Date().getFullYear() + 1; // +1 for buffer
+function isValidDate(d) {
+    if (!d || isNaN(d.getTime())) return false;
+    // ** NEW: Specifically reject timestamp 0 **
+    if (d.getTime() === EPOCH_ZERO_TIME) return false;
+    
+    const year = d.getFullYear();
+    return year >= MIN_VALID_YEAR && year <= MAX_VALID_YEAR;
+}
+
+function parseDateFromFilename(filename) {
+    const name = path.basename(filename);
+    const m = name.match(/(\d{4})[-_]?(\d{2})[-_]?(\d{2})[-_]?(\d{2})?(\d{2})?(\d{2})?/) || 
+              name.match(/IMG[-_](\d{4})(\d{2})(\d{2})[-_](\d{6})?/);
+    
+    if (m) {
+        const year = parseInt(m[1] || m[0].substring(4,8));
+        const month = parseInt(m[2] || m[0].substring(8,10)) - 1; // Month is 0-indexed
+        const day = parseInt(m[3] || m[0].substring(10,12));
+        const hour = m[4] ? parseInt(m[4]) : 12;
+        const minute = m[5] ? parseInt(m[5]) : 0;
+        const second = m[6] ? parseInt(m[6]) : 0;
+        
+        const date = new Date(Date.UTC(year, month, day, hour, minute, second));
+        
+        if (isValidDate(date)) {
+            return date;
+        }
+    }
+    return null;
+}
+
+/**
+ * Fixes a single file.
+ */
+async function fixFile(filePath, relativePath, mode, outputPath, allJsonFiles) {
+    try {
+        const ext = path.extname(filePath).toLowerCase();
+        const supportedExts = [
+            '.jpg', '.jpeg', '.png', '.mov', '.mp4', '.m4v', '.heic', 
+            '.gif', '.webp', '.tiff', '.bmp', '.avi', '.mkv', '.3gp', '.mpg', '.mpeg'
+        ];
+        
+        if (!supportedExts.includes(ext)) {
+            return { status: 'skipped' };
+        }
+
+        let dateToUse = null, gpsToUse = null, description = null;
+        const jsonPath = await findJsonSidecar(filePath, allJsonFiles);
+        
+        if (jsonPath) {
+            try {
+                const data = await fs.readJson(jsonPath);
+                const timestamp = data.photoTakenTime?.timestamp || data.creationTime?.timestamp;
+                if (timestamp) {
+                    const d = new Date(parseInt(timestamp) * 1000);
+                    if (isValidDate(d)) {
+                        dateToUse = d;
+                    }
                 }
+                if (data.geoData && (data.geoData.latitude || data.geoData.longitude)) {
+                    gpsToUse = data.geoData;
+                }
+                if (data.description) {
+                    description = data.description;
+                }
+            } catch (e) { /* JSON parse error, fall back */ }
+        }
+        
+        if (!dateToUse) {
+            dateToUse = parseDateFromFilename(filePath);
+        }
+
+        let targetPath = filePath;
+        let isSkipped = !dateToUse && !description;
+
+        if (mode !== 'inplace' && outputPath && relativePath) {
+            let destDir = path.join(outputPath, path.dirname(relativePath));
+            
+            // ** _SKIPPED FOLDER LOGIC **
+            if (isSkipped) {
+                destDir = path.join(destDir, '_SKIPPED');
+            }
+
+            await fs.ensureDir(destDir);
+            targetPath = path.join(destDir, path.basename(relativePath));
+
+            if (await fs.pathExists(targetPath)) {
+                const name = path.parse(filePath).name;
+                targetPath = path.join(destDir, `${name}_${Date.now().toString().slice(-6)}${ext}`);
+            }
+            
+            // ** CRITICAL: Preserve timestamps on copy **
+            await fs.copy(filePath, targetPath, { preserveTimestamps: true }); 
+        }
+
+        if (!isSkipped) {
+            // --- START FIX (Run on targetPath) ---
+            const tags = {};
+            
+            if (dateToUse) {
+                Object.assign(tags, {
+                    AllDates: dateToUse.toISOString(),
+                    DateTimeOriginal: dateToUse.toISOString(),
+                    CreateDate: dateToUse.toISOString(),
+                    MediaCreateDate: dateToUse.toISOString(),
+                    MediaModifyDate: dateToUse.toISOString()
+                });
+            }
+            
+            if (gpsToUse) {
+                Object.assign(tags, {
+                    GPSLatitude: gpsToUse.latitude,
+                    GPSLongitude: gpsToUse.longitude,
+                    GPSAltitude: gpsToUse.altitude || 0
+                });
+            }
+
+            if (description) {
+                Object.assign(tags, {
+                    Description: description,
+                    'Caption-Abstract': description,
+                    UserComment: description
+                });
+            }
+            
+            await exiftool.write(targetPath, tags, ['-overwrite_original']);
+
+            if (dateToUse) {
+                // Apply filesystem timestamps LAST
+                await fs.utimes(targetPath, dateToUse, dateToUse);
             } else {
-                const ext = path.extname(currentPath).toLowerCase();
-                if (ext === '.json') {
-                    jsonFiles.set(normalizePath(currentPath), currentPath);
-                } else if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.tiff', '.mov', '.mp4', '.avi', '.mkv', '.3gp'].includes(ext)) {
-                    mediaFiles.push(currentPath);
+                // ** CRITICAL FIX **
+                // No valid date, but we wrote a description which stamped "today's date".
+                // Restore the original file's timestamp.
+                const originalStats = await fs.stat(filePath);
+                await fs.utimes(targetPath, originalStats.atime, originalStats.mtime);
+            }
+            // --- END FIX ---
+
+            return { status: 'fixed', finalPath: targetPath };
+        }
+        
+        return { status: 'failed_no_date', finalPath: targetPath };
+
+    } catch (error) {
+        return { status: 'error', error: error.message || 'Unknown error' };
+    }
+}
+
+async function processDirectory(dirPath, mode, event) {
+    if (!dirPath) {
+        event.sender.send('add-log', 'No folder selected. Aborting.', 'error');
+        return;
+    }
+
+    event.sender.send('add-log', `Starting scan of: ${dirPath}`);
+    
+    let outputPath = (mode === 'inplace') ? dirPath : null;
+    let archive = null;
+    let tempDir = null;
+
+    if (mode === 'merge' || mode === 'zip') {
+        if (mode === 'zip') {
+             const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+                title: 'Save Zip Archive',
+                defaultPath: path.join(path.dirname(dirPath), 'Takeout-Fixed.zip'),
+                filters: [{ name: 'Zip Files', extensions: ['zip'] }]
+             });
+             if (canceled || !filePath) {
+                 event.sender.send('add-log', 'Zip save cancelled.', 'warn');
+                 event.sender.send('processing-complete', { total: 0, fixed: 0, failed: 0 });
+                 return;
+             }
+             outputPath = filePath;
+             tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'takeout-fixer-'));
+             archive = archiver('zip', { zlib: { level: 9 } });
+             const outputStream = fs.createWriteStream(outputPath);
+             archive.pipe(outputStream);
+        } else { // mode === 'merge'
+             const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+                title: 'Select Output Folder for Merged Photos',
+                properties: ['openDirectory', 'createDirectory']
+            });
+            if (canceled || !filePaths[0]) {
+                event.sender.send('add-log', 'Merge folder selection cancelled.', 'warn');
+                event.sender.send('processing-complete', { total: 0, fixed: 0, failed: 0 });
+                return;
+            }
+            outputPath = filePaths[0];
+        }
+    }
+    
+    event.sender.send('add-log', `Scanning library...`);
+    const filesToProcess = [];
+    const allJsonFiles = new Map();
+
+    async function scan(dir) {
+        try {
+            const entries = await fs.readdir(dir, { withFileTypes: true });
+            for (const entry of entries) {
+                const fullPath = path.join(dir, entry.name);
+                if (entry.isDirectory()) {
+                    await scan(fullPath);
+                } else if (entry.isFile()) {
+                    const ext = path.extname(fullPath).toLowerCase();
+                    if (ext === '.json') {
+                        allJsonFiles.set(normalizePath(fullPath), fullPath);
+                    } 
+                    else if (!['.ds_store', '.ini', '.db'].includes(ext)) {
+                         filesToProcess.push(fullPath);
+                    }
                 }
             }
         } catch (e) {
-            mainWindow.webContents.send('add-log', `Skipping: ${currentPath} (Error: ${e.message})`, 'warn');
+            event.sender.send('add-log', `Scan warning: inaccessible folder ${dir}`, 'warn');
         }
     }
 
-    try {
-        mainWindow.webContents.send('add-log', `Scanning selected paths...`);
-        for (const p of paths) {
-            await scan(p);
-        }
-        mainWindow.webContents.send('add-log', `Found ${mediaFiles.length} media files and ${jsonFiles.size} JSON files.`);
+    await scan(dirPath);
+    const total = filesToProcess.length;
+    event.sender.send('add-log', `Found ${total} potential media files and ${allJsonFiles.size} JSON metadata files. Starting processing...`);
 
-        let fixedCount = 0;
-        let skippedCount = 0;
-
-        for (let i = 0; i < mediaFiles.length; i++) {
-            const mediaPath = mediaFiles[i];
-            const progress = i + 1;
-            mainWindow.webContents.send('update-progress', progress, mediaFiles.length);
-
-            let key = normalizePath(mediaPath);
-            let jsonPath = jsonFiles.get(key);
-            
-            // Handle Google's '(1).jpg' vs '.jpg(1).json' mismatch
-            if (!jsonPath && key.match(/\(\d+\)$/)) {
-                 jsonPath = jsonFiles.get(key.replace(/(\(\d+\))$/, ''));
-            }
-
-            // Handle edited file mismatch (e.g. file.mp4 -> file-edited.mp4)
-            if (!jsonPath) {
-                const editedKey = key.replace(/-edited$/i, '').replace(/_edited$/i, '');
-                jsonPath = jsonFiles.get(editedKey);
-            }
-            
-            // Handle extension mismatch (e.g. file.jpeg -> file.jpg.json)
-            if (!jsonPath) {
-                 const baseKey = key.substring(0, key.lastIndexOf('.'));
-                 if(jsonFiles.has(baseKey)) {
-                    jsonPath = jsonFiles.get(baseKey);
-                 }
-            }
-
-
-            let timestamp = null;
-            let gps = null;
-            let description = null;
-            let dateSource = 'skipped';
-
-            // 1. Try finding data in JSON
-            if (jsonPath) {
-                try {
-                    const data = JSON.parse(await fs.readFile(jsonPath, 'utf8'));
-                    timestamp = data.photoTakenTime?.timestamp || data.creationTime?.timestamp;
-                    gps = data.geoData;
-                    description = data.description;
-                    if (timestamp) dateSource = 'JSON';
-                } catch (e) {
-                    mainWindow.webContents.send('add-log', `Error parsing JSON for: ${path.basename(mediaPath)}`, 'warn');
-                }
-            }
-
-            // 2. Smart Fallback: If no JSON date, try filename
-            if (!timestamp) {
-                const filenameDate = parseTimestampFromFilename(path.basename(mediaPath));
-                if (filenameDate) {
-                    timestamp = Math.floor(filenameDate.getTime() / 1000);
-                    dateSource = 'Filename';
-                }
-            }
-
-            // 3. If we found a date (from JSON OR filename), fix the file
-            if (timestamp) {
-                const dateObj = new Date(timestamp * 1000);
-                const dateStr = dateObj.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-
-                const tags = {
-                    AllDates: dateStr,
-                    FileModifyDate: dateStr,
-                    FileCreateDate: dateStr
-                };
-
-                // Only add GPS/Description if we found them (likely from JSON)
-                if (dateSource === 'JSON') {
-                    if (gps && gps.latitude !== 0 && gps.longitude !== 0) {
-                        tags.GPSLatitude = gps.latitude;
-                        tags.GPSLongitude = gps.longitude;
-                        tags.GPSAltitude = gps.altitude;
-                    }
-                    if (description) {
-                        tags.ImageDescription = description;
-                        tags['Caption-Abstract'] = description;
-                        tags.Title = description;
-                    }
-                }
-                
-                // Log before heavy operation
-                const stats = await fs.stat(mediaPath);
-                if (stats.size > 100 * 1024 * 1024) { // > 100MB
-                     mainWindow.webContents.send('add-log', `Processing large file: ${path.basename(mediaPath)}...`);
-                }
-
-                try {
-                    await exiftool.write(mediaPath, tags, {
-                        writeArgs: ['-overwrite_original'],
-                        taskEnv: { ExifTool_Config: exiftoolConfig },
-                        readArgs: [`-config ${exiftoolConfig}`],
-                        writeTimeoutMillis: 120000 // 2-minute timeout for huge files
-                    });
-                    fixedCount++;
-                } catch (e) {
-                    mainWindow.webContents.send('add-log', `ExifTool error for ${path.basename(mediaPath)}: ${e.message}`, 'error');
-                    skippedCount++;
-                }
-            } else {
-                mainWindow.webContents.send('add-log', `No date found for: ${path.basename(mediaPath)}`, 'warn');
-                skippedCount++;
-            }
-        }
-
-        mainWindow.webContents.send('processing-complete', { fixed: fixedCount, skipped: skippedCount });
-
-    } catch (err) {
-        mainWindow.webContents.send('add-log', `Fatal Error: ${err.message}`, 'error');
-    } finally {
-        exiftool.end();
-    }
-}
-
-function normalizePath(p) {
-    let key = p.toLowerCase();
-    
-    // Get base path without extension
-    const ext = path.extname(key);
-    if(ext) {
-        key = key.substring(0, key.length - ext.length);
+    if (total === 0) {
+         event.sender.send('add-log', 'No media files found in selected folder.', 'warn');
+         event.sender.send('processing-complete', { total: 0, fixed: 0, failed: 0 });
+         return;
     }
 
-    // Strip .json if it's there
-    key = key.replace(/\.json$/, '');
-    
-    // Strip common Google Photos suffixes
-    key = key.replace(/(\(\d+\))$/, '') // (1), (2), etc.
-        .replace(/-edited$/, '')
-        .replace(/_edited$/, '')
-        .replace(/-collage$/, '')
-        .replace(/-animation$/, '')
-        .replace(/-effects$/, '')
-        .replace(/-cinematic$/, '')
-        .replace(/-motion$/, '')
-        .replace(/-burst\d+$/, '')
-        .replace(/\.supplemental-metadata$/, '')
-        .trim();
+    let processed = 0, fixed = 0, failed = 0;
+    const limit = pLimit(25); 
+
+    const tasks = filesToProcess.map(filePath => limit(async () => {
+        const effectiveOutputPath = (mode === 'zip') ? tempDir : (mode === 'merge' ? outputPath : null);
+        const relativePath = path.relative(dirPath, filePath);
+
+        const res = await fixFile(filePath, relativePath, mode, effectiveOutputPath, allJsonFiles);
         
-    return key;
-}
+        processed++;
+        if (processed % Math.ceil(total / 200) === 0 || processed === total) {
+             event.sender.send('update-progress', processed, total);
+        }
 
-function parseTimestampFromFilename(filename) {
-    // Matches YYYYMMDD_HHMMSS or YYYY-MM-DD HH-MM-SS
-    let m = filename.match(/(\d{4})[-_]?(\d{2})[-_]?(\d{2})[-_ \.]?(\d{2})[-_]?(\d{2})[-_]?(\d{2})/);
-    if (m) {
-        const d = new Date(Date.UTC(m[1], m[2] - 1, m[3], m[4], m[5], m[6]));
-        if (!isNaN(d.getTime())) return d;
+        if (res.status === 'fixed') {
+            fixed++;
+        } else if (res.status !== 'skipped') {
+             if (res.status === 'failed_no_date' || res.status === 'error') {
+                 failed++;
+                 if (res.status === 'error') {
+                    event.sender.send('add-log', `Failed: ${path.basename(filePath)} (${res.error || res.status})`, 'error');
+                 }
+             }
+        }
+
+        if (mode === 'zip' && archive && tempDir && res.finalPath) {
+            const nameInZip = path.relative(tempDir, res.finalPath);
+            archive.file(res.finalPath, { name: nameInZip });
+        }
+    }));
+
+    await Promise.all(tasks);
+
+    if (mode === 'zip' && archive && tempDir) {
+        event.sender.send('add-log', 'All files processed. Finalizing zip archive (this may take a minute)...');
+        await archive.finalize();
+        try {
+            await fs.remove(tempDir);
+        } catch(e) {
+            console.error('Failed to clean up temp dir:', e);
+        }
+        event.sender.send('add-log', 'Zip archive created successfully!', 'success');
     }
     
-    // Matches IMG-YYYYMMDD-WA0001
-    m = filename.match(/IMG-(\d{4})(\d{2})(\d{2})-WA\d+/i);
-     if (m) {
-        const d = new Date(Date.UTC(m[1], m[2] - 1, m[3], 12, 0, 0)); // Default to noon
-        if (!isNaN(d.getTime())) return d;
-    }
-
-    // Matches YYYYMMDD (date only)
-    m = filename.match(/(\d{4})[-_]?(\d{2})[-_]?(\d{2})/);
-    if (m) {
-        const d = new Date(Date.UTC(m[1], m[2] - 1, m[3], 12, 0, 0)); // Default to noon
-        if (!isNaN(d.getTime())) return d;
-    }
-    return null;
-} 
+    const finalOutputPath = (mode === 'merge' ? outputPath : (mode === 'zip' ? outputPath : dirPath));
+    
+    event.sender.send('add-log', `--- COMPLETE --- Fixed: ${fixed}, Skipped: ${failed}.`, 'success');
+    event.sender.send('processing-complete', { 
+        total, 
+        fixed, 
+        failed, 
+        outputPath: finalOutputPath 
+    });
+}

@@ -2,8 +2,8 @@ name: Build & Release
 
 on:
   push:
-    branches: [ "main" ]
-    tags: [ 'v*.*.*' ]
+    tags:
+      - 'v*.*.*'
 
 jobs:
   build:
@@ -11,8 +11,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    
+        os: [macos-latest, windows-latest, ubuntu-latest]
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -30,12 +30,11 @@ jobs:
         shell: bash
         run: |
           if [ "${{ matrix.os }}" = "macos-latest" ]; then
-            # Build Intel version
+            # Build for both Intel (x64) and Apple Silicon (arm64)
             npm run dist -- --mac --x64
-            # Build Apple Silicon version
             npm run dist -- --mac --arm64
           elif [ "${{ matrix.os }}" = "windows-latest" ]; then
-            npm run dist -- --win
+            npm run dist -- --win --x64
           else
             npm run dist -- --linux
           fi
@@ -43,13 +42,13 @@ jobs:
           CSC_IDENTITY_AUTO_DISCOVERY: false
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload build artifact
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: dist-${{ matrix.os }}
           path: |
-            dist/*.exe
             dist/*.dmg
+            dist/*.exe
             dist/*.AppImage
           if-no-files-found: error
 
@@ -70,16 +69,8 @@ jobs:
           pattern: dist-*
           merge-multiple: true
 
-      - name: Consolidate files
-        run: |
-          mkdir -p release-assets
-          mv all-dist/*.exe release-assets/
-          mv all-dist/*.dmg release-assets/
-          mv all-dist/*.AppImage release-assets/
-          mv all-dist/*.snap release-assets/ || true
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: release-assets/*
+          files: all-dist/*
           fail_on_unmatched_files: true

@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Takeout Date Fixer</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2318181b'/><rect x='25' y='25' width='20' height='20' rx='3' fill='%23a855f7'/><rect x='55' y='25' width='20' height='20' rx='3' fill='%236d28d9'/><rect x='25' y='55' width='50' height='20' rx='3' fill='%234f46e5'/></svg>">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PhotoTakeout Fixer Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -13,9 +12,10 @@
                 extend: {
                     colors: {
                         indigo: { 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
-                        gray: { 800: '#1f2937', 900: '#111827', 950: '#09090b' },
-                        yellow: { 400: '#facc15', 500: '#eab308' }
-                    }
+                        purple: { 400: '#c084fc', 500: '#a855f7', 600: '#9333ea' },
+                        gray: { 800: '#1f2937', 900: '#111827', 950: '#09090b' }
+                    },
+                    animation: { 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
                 }
             }
         }
@@ -23,255 +23,343 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; user-select: none; }
-        /* Draggable Header */
-        #app-header { -webkit-app-region: drag; }
-        #app-header button, #app-header a { -webkit-app-region: no-drag; }
-        /* Fix for Mac Traffic Lights */
-        .platform-darwin #app-header { padding-left: 72px; }
-        /* Custom Scrollbar */
+        #titlebar { -webkit-app-region: drag; }
+        .no-drag { -webkit-app-region: no-drag; }
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1f2937; }
-        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
-        /* Accordion */
-        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
-        .accordion-open .accordion-content { max-height: 500px; }
-        .rotate-icon { transition: transform 0.3s ease; }
-        .accordion-open .rotate-icon { transform: rotate(180deg); }
-        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        /* Fix for macOS traffic lights */
+        .platform-darwin #titlebar-content { padding-left: 70px; }
     </style>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen overflow-hidden flex flex-col">
 
-    <header id="app-header" class="flex justify-between items-center bg-gray-900/50 backdrop-blur-md border-b border-gray-800 p-3 fixed top-0 left-0 right-0 z-50">
-        <div class="flex items-center">
-            <svg class="h-6 w-6 mr-3" width="64" height="64" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="100" height="100" rx="20" fill="#111827"/>
+<body class="bg-gray-950 text-gray-100 flex flex-col h-screen overflow-hidden">
+
+    <!-- Custom Titlebar -->
+    <div id="titlebar" class="bg-gray-950/90 border-b border-white/5 h-10 flex items-center justify-between fixed top-0 left-0 right-0 z-50">
+        <!-- Left side: Logo and Title (with platform-specific padding) -->
+        <div id="titlebar-content" class="flex items-center gap-2 pl-3">
+             <svg class="w-5 h-5" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100" height="100" rx="20" fill="#18181b"/>
                 <rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/>
                 <rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/>
                 <rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/>
             </svg>
-            <span class="text-base font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">Takeout Date Fixer</span>
+             <span class="text-sm font-medium">PhotoTakeout Fixer Pro</span>
         </div>
-        <div class="flex items-center space-x-4">
-            <button id="header-reset-btn" class="hidden text-sm text-gray-400 hover:text-white transition flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Start Over
+        <!-- Right side: Support Button -->
+        <a id="support-btn" href="#" class="no-drag h-full flex items-center px-4 text-sm text-yellow-500 hover:bg-yellow-500/10 transition-colors">
+            ☕ Support Development
+        </a>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col items-center justify-center p-6 mt-10 relative">
+
+        <!-- Idle State (Selection) -->
+        <div id="state-idle" class="w-full max-w-4xl flex flex-col items-center space-y-8 transition-all duration-500 animate-fade-in-up">
+            <div class="text-center space-y-6">
+                <div class="inline-flex items-center justify-center mb-4">
+                    <svg class="w-24 h-24 drop-shadow-2xl" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="100" height="100" rx="20" fill="#18181b"/>
+                        <rect x="25" y="25" width="20" height="20" rx="3" fill="#a855f7"/>
+                        <rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/>
+                        <rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/>
+                    </svg>
+                </div>
+                <h1 class="text-5xl font-extrabold tracking-tight">
+                    Select your <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">Takeout Folder</span>
+                </h1>
+                <p class="text-gray-400 text-xl max-w-2xl mx-auto">
+                    We'll scan your library, re-attach lost metadata (dates, GPS, descriptions), and fix your photos.
+                </p>
+            </div>
+            <button id="select-folder-btn" class="group relative inline-flex items-center justify-center no-drag transform hover:scale-105 transition duration-300">
+                <div class="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-500 animate-pulse-slow"></div>
+                <div class="relative bg-gray-900 px-10 py-6 rounded-2xl flex items-center gap-4 text-2xl font-bold hover:bg-gray-800 transition-colors">
+                    <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v8a2 2 0 01-2 2H5z"/></svg>
+                    <span>Browse Folder...</span>
+                </div>
             </button>
-            <a id="header-donate-btn" href="https://buymeacoffee.com/Being_Glad" target="_blank" class="inline-flex items-center px-3 py-1.5 border border-yellow-500/50 text-sm font-medium rounded-md text-yellow-500 hover:bg-yellow-500/10 transition">
-                ☕ Buy me a coffee
-            </a>
         </div>
-    </header>
 
-    <main class="flex-grow pt-16 overflow-y-auto">
-        <div class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-            
-            <section id="upload-section" class="bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-800">
-                <div class="p-6 sm:p-8">
-                    <div class="space-y-6">
-                        <div class="bg-indigo-900/30 border-l-4 border-indigo-500 p-4 rounded-r-lg flex">
-                            <svg class="h-5 w-5 text-indigo-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
-                            <div class="ml-3 text-sm text-indigo-200">This app modifies files <span class="font-semibold text-white">in-place</span>. No copies are made.</div>
+        <!-- Options State -->
+        <div id="state-options" class="hidden w-full max-w-3xl bg-gray-900/80 border border-white/10 rounded-3xl p-8 backdrop-blur-xl space-y-8 animate-fade-in-up">
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-2">Processing Options</h2>
+                <p class="text-gray-400">Selected: <span id="selected-path" class="font-mono text-indigo-300 break-all"></span></p>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Mode Selection -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <label class="cursor-pointer no-drag">
+                        <input type="radio" name="mode" value="inplace" class="peer hidden" checked>
+                        <div class="h-full p-5 bg-gray-950 border-2 border-gray-800 rounded-2xl peer-checked:border-indigo-500 peer-checked:bg-indigo-500/10 transition hover:border-gray-700">
+                            <div class="font-bold text-lg mb-2 peer-checked:text-indigo-400">Fix In-Place</div>
+                            <p class="text-sm text-gray-500">Modifies files directly where they are. Fastest option, requires no extra disk space.</p>
                         </div>
-
-                        <div id="drop-zone" class="drop-zone rounded-xl p-10 text-center cursor-pointer border-2 border-dashed border-gray-700 hover:border-indigo-500 hover:bg-gray-800/50 transition group">
-                            <div class="space-y-4 pointer-events-none">
-                                <svg class="mx-auto h-16 w-16 text-gray-500 group-hover:text-indigo-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
-                                <div class="text-gray-300 text-lg"><span class="font-semibold text-indigo-400">Click to select folders or files</span></div>
-                                <p class="text-sm text-gray-500">You can also drag and drop your Takeout folders here.</p>
-                            </div>
+                    </label>
+                    <label class="cursor-pointer no-drag">
+                        <input type="radio" name="mode" value="merge" class="peer hidden">
+                         <div class="h-full p-5 bg-gray-950 border-2 border-gray-800 rounded-2xl peer-checked:border-indigo-500 peer-checked:bg-indigo-500/10 transition hover:border-gray-700">
+                            <div class="font-bold text-lg mb-2 peer-checked:text-indigo-400">Merge to New Folder</div>
+                            <p class="text-sm text-gray-500">Copies all photos into a new, clean folder that mirrors your original album structure.</p>
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="results-section" class="hidden animate-fade-in space-y-6">
-                <div class="bg-green-900/20 border border-green-900 rounded-lg p-4 flex items-start">
-                     <svg class="h-6 w-6 text-green-500 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <div>
-                        <h3 class="text-lg font-medium text-green-400">Processing Complete!</h3>
-                        <p class="text-green-300/80 mt-1" id="results-summary"></p>
-                    </div>
-                </div>
-                <div class="bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-                    <div class="flex items-center"><span class="text-3xl mr-4">☕</span><div><h4 class="text-white font-semibold">Saved you time?</h4><p class="text-yellow-200/80 text-sm">Consider supporting future development to keep this tool free forever.</p></div></div>
-                    <a id="donate-btn-results" href="https://buymeacoffee.com/Being_Glad" target="_blank" class="whitespace-nowrap bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-3 px-6 rounded-xl transition shadow-lg shadow-yellow-500/20">Fuel Future Development</a>
-                </div>
-            </section>
-
-            <div id="log-accordion" class="border border-gray-800 rounded-lg overflow-hidden">
-                <button id="log-toggle" class="w-full px-4 py-3 bg-gray-800/50 flex justify-between items-center text-left text-sm font-medium text-gray-300 hover:bg-gray-800 transition">
-                    <span>Show Processing Log</span>
-                    <svg class="rotate-icon h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                </button>
-                 <div id="log-content" class="accordion-content bg-black">
-                     <div id="progress-bar-container" class="p-4 space-y-2 hidden border-b border-gray-700">
-                         <div class="w-full bg-gray-700 rounded-full h-2.5">
-                            <div id="progress-bar-inner" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%; transition: width 0.2s ease;"></div>
+                    </label>
+                    <label class="cursor-pointer no-drag">
+                        <input type="radio" name="mode" value="zip" class="peer hidden">
+                         <div class="h-full p-5 bg-gray-950 border-2 border-gray-800 rounded-2xl peer-checked:border-indigo-500 peer-checked:bg-indigo-500/10 transition hover:border-gray-700">
+                            <div class="font-bold text-lg mb-2 peer-checked:text-indigo-400">Create Zip Archive</div>
+                            <p class="text-sm text-gray-500">Creates a single zip file of all fixed photos, preserving your original album structure.</p>
                         </div>
-                        <span id="progress-text" class="text-sm text-gray-400 font-mono">Processing...</span>
-                    </div>
-                     <div id="processing-log" class="p-4 font-mono text-xs text-gray-400 h-64 overflow-y-auto">
-                        <p class="text-gray-500">Waiting to start...</p>
-                    </div>
+                    </label>
                 </div>
             </div>
 
-            <section class="pt-6">
-                <h3 class="text-base font-semibold text-indigo-400 tracking-wide uppercase text-center mb-6">Pro Features Active</h3>
-                <div class="grid grid-cols-1 gap-8 sm:grid-cols-3">
-                    <div class="flex items-center space-x-4">
-                        <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-xl shadow-lg">
-                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        </span>
-                        <div>
-                            <h4 class="text-lg font-medium text-white">EXIF Timestamps</h4>
-                            <p class="text-sm text-gray-400">Writes permanent "Date Taken".</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                         <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-xl shadow-lg">
-                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                        </span>
-                        <div>
-                            <h4 class="text-lg font-medium text-white">GPS Locations</h4>
-                            <p class="text-sm text-gray-400">Restores original map data.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-xl shadow-lg">
-                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H7a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
-                        </span>
-                        <div>
-                            <h4 class="text-lg font-medium text-white">Unlimited Files</h4>
-                            <p class="text-sm text-gray-400">No browser size limits.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
+            <div class="flex gap-4">
+                <button id="cancel-options-btn" class="px-6 py-3 rounded-xl font-semibold text-gray-400 hover:bg-gray-800 transition no-drag">Cancel</button>
+                <button id="start-processing-btn" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold transition no-drag">
+                    Start Fixing Photos
+                </button>
+            </div>
         </div>
+
+        <!-- Processing State -->
+        <div id="state-processing" class="hidden w-full max-w-4xl bg-gray-900/50 border border-white/10 rounded-3xl p-8 backdrop-blur-xl animate-fade-in-up">
+             <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold flex items-center gap-3">
+                    <div class="relative flex h-3 w-3">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
+                    </div>
+                    Processing Library...
+                </h2>
+                <div id="time-remaining" class="text-sm font-mono text-gray-400">Calculating...</div>
+            </div>
+            <div class="h-4 bg-gray-950 rounded-full overflow-hidden ring-1 ring-white/5 mb-4">
+                <div id="progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 w-0 transition-all duration-300 ease-out"></div>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="bg-gray-950/50 p-4 rounded-2xl border border-white/5 text-center">
+                    <div id="stat-total" class="text-2xl font-bold text-white">0</div>
+                    <div class="text-xs text-gray-500 uppercase tracking-wider font-medium">Total Files</div>
+                </div>
+                <div class="bg-gray-950/50 p-4 rounded-2xl border border-green-500/10 text-center">
+                    <div id="stat-fixed" class="text-2xl font-bold text-green-400">0</div>
+                    <div class="text-xs text-green-500/70 uppercase tracking-wider font-medium">Fixed</div>
+                </div>
+                <div class="bg-gray-950/50 p-4 rounded-2xl border border-red-500/10 text-center">
+                    <div id="stat-failed" class="text-2xl font-bold text-red-400">0</div>
+                    <div class="text-xs text-red-500/70 uppercase tracking-wider font-medium">Skipped</div>
+                </div>
+            </div>
+            <div class="bg-black/30 rounded-xl p-4 h-48 overflow-y-auto font-mono text-xs text-gray-400 space-y-1 w-full" id="log-container">
+                <div class="text-gray-500 italic">Waiting for start...</div>
+            </div>
+        </div>
+
+        <!-- Complete State -->
+        <div id="state-complete" class="hidden w-full max-w-xl text-center space-y-6 animate-fade-in-up">
+             <div class="inline-flex items-center justify-center p-4 bg-green-500/10 rounded-full mb-4 ring-1 ring-green-500/20">
+                <svg class="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <h2 class="text-4xl font-bold text-white">All Done!</h2>
+            <p id="completion-msg" class="text-xl text-gray-300">Your library has been successfully fixed.</p>
+            <div class="flex items-center justify-center gap-4">
+                <button id="reset-btn" class="bg-gray-800 hover:bg-gray-700 text-white px-8 py-3 rounded-xl font-semibold transition-colors no-drag">
+                    Process Another
+                </button>
+                <button id="open-output-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-xl font-bold transition-colors no-drag">
+                    Open Output
+                </button>
+            </div>
+        </div>
+
     </main>
-    
+
     <script>
-        // --- UI Elements ---
-        const dropZone = document.getElementById('drop-zone');
-        const logContainer = document.getElementById('processing-log');
-        const logToggle = document.getElementById('log-toggle');
-        const logAccordion = document.getElementById('log-accordion');
-        const resultsSection = document.getElementById('results-section');
-        const uploadSection = document.getElementById('upload-section');
-        const resultsSummary = document.getElementById('results-summary');
-        const progressContainer = document.getElementById('progress-bar-container');
-        const progressText = document.getElementById('progress-text');
-        const progressBar = document.getElementById('progress-bar-inner');
-        const headerResetBtn = document.getElementById('header-reset-btn');
-        const appHeader = document.getElementById('app-header');
-        const donateBtnResults = document.getElementById('donate-btn-results');
+        // CRITICAL FIX: Wait for the DOM to be fully loaded before running any script
+        window.addEventListener('DOMContentLoaded', () => {
+            const electron = window.electron;
+            const isDesktop = !!electron;
 
-        // --- Mac Platform Fix ---
-        window.electron.getPlatform().then(platform => {
-            if (platform === 'darwin') {
-                appHeader.classList.add('platform-darwin');
-            }
-        });
-        
-        // --- App State ---
-        function resetApp() {
-            uploadSection.classList.remove('hidden');
-            resultsSection.classList.add('hidden');
-            progressContainer.classList.add('hidden');
-            headerResetBtn.classList.add('hidden');
-            logContainer.innerHTML = '<p class="text-gray-500">Waiting to start...</p>';
-            if (logAccordion.classList.contains('accordion-open')) {
-                logToggle.click();
-            }
-        }
-        resetApp(); // Initial state
+            // DOM Elements
+            const states = {
+                idle: document.getElementById('state-idle'),
+                options: document.getElementById('state-options'),
+                processing: document.getElementById('state-processing'),
+                complete: document.getElementById('state-complete')
+            };
+            const btns = {
+                select: document.getElementById('select-folder-btn'),
+                start: document.getElementById('start-processing-btn'),
+                cancelOptions: document.getElementById('cancel-options-btn'),
+                reset: document.getElementById('reset-btn'),
+                openOutput: document.getElementById('open-output-btn'),
+                support: document.getElementById('support-btn')
+            };
+            const ui = {
+                selectedPath: document.getElementById('selected-path'),
+                progressBar: document.getElementById('progress-bar'),
+                logContainer: document.getElementById('log-container'),
+                stats: {
+                    total: document.getElementById('stat-total'),
+                    fixed: document.getElementById('stat-fixed'),
+                    failed: document.getElementById('stat-failed')
+                },
+                completionMsg: document.getElementById('completion-msg'),
+                timeRemaining: document.getElementById('time-remaining')
+            };
 
-        // --- Event Listeners (UI -> Electron) ---
-        dropZone.addEventListener('click', async () => {
-            const paths = await window.electron.openDirectory();
-            if (paths && paths.length > 0) {
-                startProcessing(paths);
-            }
-        });
-        
-        // Drag and Drop
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault(); e.stopPropagation();
-            dropZone.classList.add('border-indigo-500', 'bg-gray-800/50');
-        });
-        dropZone.addEventListener('dragleave', (e) => {
-            e.preventDefault(); e.stopPropagation();
-            dropZone.classList.remove('border-indigo-500', 'bg-gray-800/50');
-        });
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault(); e.stopPropagation();
-            dropZone.classList.remove('border-indigo-500', 'bg-gray-800/50');
-            const paths = [...e.dataTransfer.files].map(f => f.path);
-            if (paths && paths.length > 0) {
-                startProcessing(paths);
-            }
-        });
-        
-        headerResetBtn.addEventListener('click', () => {
-             // Simple reload is the most robust way to reset the Electron backend state
-             window.location.reload();
-        });
-        
-        // External link handler for the results donation button
-        donateBtnResults.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.electron.openExternal(e.currentTarget.href);
-        });
+            let selectedFolder = null;
+            let finalOutputPath = null;
+            let processingStartTime = 0;
 
-        function startProcessing(paths) {
-            // Reset UI to processing state
-            uploadSection.classList.add('hidden');
-            resultsSection.classList.add('hidden');
-            progressContainer.classList.remove('hidden');
-            headerResetBtn.classList.remove('hidden');
-            logContainer.innerHTML = '';
-            if (!logAccordion.classList.contains('accordion-open')) {
-                logToggle.click();
+            function showState(stateKey) {
+                Object.values(states).forEach(el => el.classList.add('hidden'));
+                states[stateKey].classList.remove('hidden');
             }
-            // Send paths to backend
-            window.electron.startProcessing(paths);
-        }
 
-        // --- Event Handlers (Electron -> UI) ---
-        window.electron.onLog((msg, type = 'info') => {
-            const p = document.createElement('p');
-            let color = 'text-gray-400';
-            if (type === 'error') color = 'text-red-400';
-            if (type === 'warn') color = 'text-yellow-400';
-            if (type === 'success') color = 'text-green-400';
-            p.className = `${color} mb-1`;
-            p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-            logContainer.prepend(p);
-        });
-        
-        window.electron.onProgress((current, total) => {
-            const percent = total > 0 ? (current / total) * 100 : 0;
-            progressBar.style.width = `${percent}%`;
-            progressText.textContent = `Processing file ${current} of ${total}`;
-        });
+            function addLog(msg, type = 'info') {
+                if (ui.logContainer.children.length === 1 && ui.logContainer.children[0].textContent.includes('Waiting')) {
+                    ui.logContainer.innerHTML = '';
+                }
+                const div = document.createElement('div');
+                
+                // FIX for [object Object] BUG
+                const logMsg = (typeof msg === 'string') ? msg : JSON.stringify(msg);
+                div.textContent = `> ${logMsg}`;
+                
+                if (type === 'error') div.className = 'text-red-400';
+                else if (type === 'success') div.className = 'text-green-400';
+                else if (type === 'warn') div.className = 'text-yellow-400';
+                ui.logContainer.appendChild(div);
+                ui.logContainer.scrollTop = ui.logContainer.scrollHeight;
+            }
 
-        window.electron.onComplete((stats) => {
-            resultsSummary.textContent = `Successfully fixed ${stats.fixed} files. ${stats.skipped} files were skipped.`;
-            resultsSection.classList.remove('hidden'); // Show success banners
-            progressContainer.classList.add('hidden'); // Hide progress bar
-        });
-        
-        // Log Accordion Toggle
-        logToggle.addEventListener('click', () => {
-            logAccordion.classList.toggle('accordion-open');
-            logToggle.querySelector('span').textContent = logAccordion.classList.contains('accordion-open') ? 'Hide Processing Log' : 'Show Processing Log';
+            // --- Platform Specific UI Tweaks ---
+            if (isDesktop) {
+                electron.getPlatform().then(platform => {
+                    document.body.classList.add(`platform-${platform}`);
+                });
+            }
+
+            // --- Event Listeners ---
+            btns.support.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (isDesktop) electron.openExternal('https://buymeacoffee.com/Being_Glad');
+            });
+
+            btns.select.addEventListener('click', async () => {
+                if (!isDesktop) {
+                    alert("This is a demo. Please use the desktop app for full functionality.");
+                    return;
+                }
+                try {
+                    const path = await electron.openDirectory();
+                    if (path) {
+                        selectedFolder = path;
+                        ui.selectedPath.textContent = path;
+                        showState('options');
+                    }
+                } catch (e) {
+                    console.error("Error opening directory:", e);
+                    addLog("Error opening directory: " + e.message, 'error');
+                }
+            });
+
+            btns.cancelOptions.addEventListener('click', () => {
+                selectedFolder = null;
+                showState('idle');
+            });
+
+            btns.start.addEventListener('click', () => {
+                if (!selectedFolder) return;
+                const mode = document.querySelector('input[name="mode"]:checked').value;
+                
+                showState('processing');
+                ui.progressBar.style.width = '0%';
+                Object.values(ui.stats).forEach(el => el.textContent = '0');
+                ui.logContainer.innerHTML = '';
+                ui.timeRemaining.textContent = 'Calculating...';
+                processingStartTime = Date.now();
+                
+                addLog(`Starting... Mode: ${mode}`);
+                
+                electron.startProcessing({ 
+                    paths: [selectedFolder], 
+                    mode
+                });
+            });
+
+            btns.reset.addEventListener('click', () => {
+                selectedFolder = null;
+                finalOutputPath = null;
+                showState('idle');
+            });
+
+            btns.openOutput.addEventListener('click', () => {
+                if (isDesktop && finalOutputPath) {
+                    electron.openExternal(finalOutputPath);
+                }
+            });
+
+            // --- Electron IPC Setup ---
+            if (isDesktop) {
+                electron.onUpdateProgress((current, total) => {
+                    const percent = Math.max(0, Math.min(100, Math.round((current / total) * 100) || 0));
+                    ui.progressBar.style.width = `${percent}%`;
+                    ui.stats.total.textContent = total;
+
+                    // Time remaining estimation
+                    if (processingStartTime > 0 && current > 10) {
+                        const elapsedMs = Date.now() - processingStartTime;
+                        const msPerFile = elapsedMs / current;
+                        const remainingMs = msPerFile * (total - current);
+                        const remainingSec = Math.round(remainingMs / 1000);
+                        if (remainingSec < 60) {
+                            ui.timeRemaining.textContent = `${remainingSec}s left`;
+                        } else {
+                            ui.timeRemaining.textContent = `${Math.round(remainingSec / 60)}m left`;
+                        }
+                    }
+                });
+                
+                electron.onLog((msg, type) => {
+                    addLog(msg, type);
+                    // Simple stat tracking based on log messages
+                    if (msg.includes('Fixed:')) {
+                        ui.stats.fixed.textContent = parseInt(ui.stats.fixed.textContent) + 1;
+                    } else if (msg.includes('Failed:')) {
+                        ui.stats.failed.textContent = parseInt(ui.stats.failed.textContent) + 1;
+                    }
+                });
+
+                electron.onComplete((stats) => {
+                    ui.stats.fixed.textContent = stats.fixed;
+                    ui.stats.failed.textContent = stats.failed;
+                    ui.timeRemaining.textContent = 'Complete!';
+                    finalOutputPath = stats.outputPath;
+                    
+                    const mode = document.querySelector('input[name="mode"]:checked').value;
+                    if (mode === 'inplace') {
+                        ui.completionMsg.textContent = `Successfully fixed ${stats.fixed} files in place.`;
+                        btns.openOutput.textContent = 'Show in Finder';
+                    } else if (mode === 'merge') {
+                        ui.completionMsg.textContent = `Successfully merged ${stats.fixed} files.`;
+                        btns.openOutput.textContent = 'Open Merged Folder';
+                    } else if (mode === 'zip') {
+                        ui.completionMsg.textContent = `Successfully created zip file.`;
+                        btns.openOutput.textContent = 'Show Zip File';
+                    }
+                    
+                    showState('complete');
+                });
+            }
+
+            // Initial state
+            showState('idle');
         });
     </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Takeout Date Fixer</title>
+    <title>PhotoTakeout Fixer</title>
     <!-- The "Module" Logo Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2318181b'/><rect x='25' y='25' width='20' height='20' rx='3' fill='%23a855f7'/><rect x='55' y='25' width='20' height='20' rx='3' fill='%236d28d9'/><rect x='25' y='55' width='50' height='20' rx='3' fill='%234f46e5'/></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -42,7 +42,7 @@
     <nav class="border-b border-gray-800 bg-gray-900/50 backdrop-blur-md sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center">
+                <a href="#" id="logo-link" class="flex items-center cursor-pointer">
                     <!-- The "Module" Logo (h-8 w-8 = 32px) -->
                     <svg class="h-8 w-8 mr-3" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="100" height="100" rx="20" fill="#18181b"/>
@@ -50,8 +50,8 @@
                         <rect x="55" y="25" width="20" height="20" rx="3" fill="#6d28d9"/>
                         <rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/>
                     </svg>
-                    <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">Takeout Date Fixer</span>
-                </div>
+                    <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">PhotoTakeout Fixer</span>
+                </a>
                 <div class="flex items-center space-x-4">
                     <a href="#features" class="text-sm font-medium text-gray-300 hover:text-white transition hidden sm:block">Features</a>
                     <a href="#faq" class="text-sm font-medium text-gray-300 hover:text-white transition hidden sm:block">FAQ</a>
@@ -163,7 +163,7 @@
                     <div class="p-6 sm:p-8 space-y-6">
                         <div class="bg-indigo-900/30 border-l-4 border-indigo-500 p-4 rounded-r-lg flex">
                             <svg class="h-5 w-5 text-indigo-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
-                            <div class="ml-3 text-sm text-indigo-200">This lite version is for <span class="font-semibold text-white">quick jobs under 5GB</span>. It fixes the "Date Modified" for sorting. For permanent EXIF data, use the Desktop App below.</div>
+                            <div class="ml-3 text-sm text-indigo-200">This lite version is for <span class="font-semibold text-white">quick jobs under 5GB</span>. It only fixes the file's "Date Modified" for sorting. For permanent EXIF data, use the Desktop App.</div>
                         </div>
 
                         <div id="upload-section" class="drop-zone rounded-xl p-10 text-center cursor-pointer hover:bg-gray-800/50 transition group">
@@ -217,25 +217,11 @@
         <div id="desktop-app" class="py-24">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                  <h2 class="text-4xl font-extrabold text-white mb-4">Get the Full-Power Desktop App</h2>
-                <p class="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">No size limits. Permanent EXIF & GPS fixes. Runs entirely offline.</p>
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
-                     <!-- Windows Button -->
-                    <button data-download-url="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.exe" class="desktop-download-btn group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-2xl hover:border-indigo-500 transition w-64 h-32 cursor-pointer">
-                        <span class="text-gray-400 font-medium text-sm mb-2">Download for</span>
-                        <span class="text-white text-2xl font-bold group-hover:text-indigo-300 transition">Windows</span>
-                    </button>
-                    <!-- Linux Button -->
-                    <button data-download-url="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.AppImage" class="desktop-download-btn group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-2xl hover:border-indigo-500 transition w-64 h-32 cursor-pointer">
-                        <span class="text-gray-400 font-medium text-sm mb-2">Download for</span>
-                        <span class="text-white text-2xl font-bold group-hover:text-indigo-300 transition">Linux</span>
-                    </button>
-                    <!-- Mac Button -->
-                    <button data-download-url="https://github.com/Being-Glad/takeout-fixer/releases/latest/download/Takeout-Date-Fixer.dmg" class="desktop-download-btn group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-2xl hover:border-indigo-500 transition w-64 h-32 cursor-pointer">
-                        <span class="text-gray-400 font-medium text-sm mb-2">Download for</span>
-                        <span class="text-white text-lg font-bold group-hover:text-indigo-300 transition">Mac (Universal)</span>
-                    </button>
+                <p class="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">No size limits. Permanent EXIF, GPS & Description fixes. Runs entirely offline.</p>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-6" id="download-links">
+                     <!-- Download buttons will be dynamically inserted here -->
                 </div>
-                <p class="mt-8 text-gray-500">Version 1.0 • 100% Free & Open Source</p>
+                <p class="mt-8 text-gray-500">100% Free & Open Source</p>
             </div>
         </div>
 
@@ -246,7 +232,7 @@
                 <div class="space-y-4">
                     <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
                         <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Why do I need this?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                        <div class="faq-content hidden px-6 pb-4 text-gray-400">Google Takeout separates metadata (date, location) into JSON files. This tool reads them and puts the correct info back, so your photos don't all show today's date in your gallery.</div>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">Google Takeout separates metadata (date, location, description) into JSON files. This tool reads them and puts the correct info back, so your photos don't all show today's date in your gallery.</div>
                     </div>
                     <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
                         <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Is it safe?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
@@ -254,15 +240,15 @@
                     </div>
                     <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
                         <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Web App vs Desktop App?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                        <div class="faq-content hidden px-6 pb-4 text-gray-400">The <span class="font-semibold text-white">Quick-Fix (Web)</span> app is for small batches (<5GB) and only fixes sorting dates. The <span class="font-semibold text-white">Desktop App</span> has unlimited size and permanently writes true EXIF/GPS data into the files themselves.</div>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">The <span class="font-semibold text-white">Quick-Fix (Web)</span> app is for small batches (<5GB) and only fixes sorting dates. The <span class="font-semibold text-white">Desktop App</span> has unlimited size and permanently writes true EXIF/GPS/Description data into the files themselves.</div>
                     </div>
                     <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
                         <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Will this create duplicates?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                        <div class="faq-content hidden px-6 pb-4 text-gray-400">The Desktop App modifies files <span class="font-semibold text-white">in-place</span>, so NO duplicates are created. The Web App creates a new zip file with your fixed photos, leaving your originals untouched.</div>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">The Desktop App's "Fix In-Place" mode modifies files <span class="font-semibold text-white">in-place</span>, so NO duplicates are created. The Web App and other desktop modes create new fixed files, leaving your originals untouched.</div>
                     </div>
                      <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
                         <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">Works with Apple Photos?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
-                        <div class="faq-content hidden px-6 pb-4 text-gray-400">Yes! Use the <span class="font-semibold text-white">Desktop App</span> to process your files first. Then, when you import them into Apple Photos, they will appear in the correct chronological order with all location data intact.</div>
+                        <div class="faq-content hidden px-6 pb-4 text-gray-400">Yes! Use the <span class="font-semibold text-white">Desktop App</span> to process your files first. Then, when you import them into Apple Photos, they will appear in the correct chronological order with all location data and descriptions intact.</div>
                     </div>
                     <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
                         <button class="faq-toggle w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"><span class="text-lg font-medium text-white">How fast is it?</span><svg class="h-5 w-5 text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
@@ -308,111 +294,47 @@
     </main>
 
     <script>
-        // FAQ Toggles
-        document.querySelectorAll('.faq-toggle').forEach(button => {
-            button.addEventListener('click', () => {
-                const content = button.nextElementSibling;
-                content.classList.toggle('hidden');
-                button.querySelector('svg').classList.toggle('rotate-180');
-            });
-        });
-
-        // Log Toggles
-        const logToggle = document.getElementById('log-toggle');
-        const logAccordion = document.getElementById('log-accordion');
-        logToggle.addEventListener('click', () => {
-            logAccordion.classList.toggle('accordion-open');
-            logToggle.querySelector('span').textContent = logAccordion.classList.contains('accordion-open') ? 'Hide Processing Log' : 'Show Processing Log';
-        });
-
-        // Start Over / Reset
+        // --- DOM Elements ---
+        const logoLink = document.getElementById('logo-link');
         const headerResetBtn = document.getElementById('header-reset-btn');
-        headerResetBtn.addEventListener('click', resetApp);
-        function resetApp() {
-            uploadSection.classList.remove('hidden');
-            resultsSection.classList.add('hidden');
-            logAccordion.classList.add('hidden'); logAccordion.classList.remove('accordion-open');
-            headerResetBtn.classList.add('hidden');
-            fileInput.value = '';
-        }
-
-        // --- MODAL LOGIC START ---
+        const uploadSection = document.getElementById('upload-section');
+        const resultsSection = document.getElementById('results-section');
+        const logAccordion = document.getElementById('log-accordion');
+        const logToggle = document.getElementById('log-toggle');
+        const fileInput = document.getElementById('fileInput');
+        const logContainer = document.getElementById('processing-log');
+        const downloadButtons = document.getElementById('download-buttons');
+        const resultsSummary = document.getElementById('results-summary');
         const downloadModal = document.getElementById('download-modal');
         const donateDownloadBtn = document.getElementById('donate-download-btn');
         const justDownloadBtn = document.getElementById('just-download-btn');
         const modalCloseBtn = document.getElementById('modal-close');
-        let pendingAction = null;
-
-        function showDownloadModal(action) {
-            pendingAction = action;
-            downloadModal.classList.remove('hidden');
-        }
-        function hideDownloadModal() {
-            downloadModal.classList.add('hidden');
-            pendingAction = null;
-        }
-        modalCloseBtn.addEventListener('click', hideDownloadModal); // Close button handler
-        donateDownloadBtn.addEventListener('click', () => {
-            window.open('https://buymeacoffee.com/Being_Glad', '_blank');
-            if (pendingAction) pendingAction();
-            hideDownloadModal();
-        });
-        justDownloadBtn.addEventListener('click', () => {
-            if (pendingAction) pendingAction();
-            hideDownloadModal();
-        });
-        // Desktop Download Buttons Hook
-        document.querySelectorAll('.desktop-download-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const url = btn.getAttribute('data-download-url');
-                showDownloadModal(() => window.location.href = url);
-            });
-        });
-        // --- MODAL LOGIC END ---
-
-        // Web App Logic
-        const dropZone = document.getElementById('upload-section');
-        const fileInput = document.getElementById('fileInput');
-        const logContainer = document.getElementById('processing-log');
-        const resultsSection = document.getElementById('results-section');
-        const uploadSection = document.getElementById('upload-section');
-        const downloadButtons = document.getElementById('download-buttons');
-        const resultsSummary = document.getElementById('results-summary');
+        
         const FIVE_GB = 5 * 1024 * 1024 * 1024;
-
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, preventDefaults, false);
-        });
-        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, highlight, false);
-        });
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, unhighlight, false);
-        });
-        function highlight(e) { dropZone.classList.add('active'); }
-        function unhighlight(e) { dropZone.classList.remove('active'); }
-
-        dropZone.addEventListener('drop', handleDrop, false);
-        dropZone.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', handleFiles);
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            if (files.length > 0) handleFiles({ target: { files: files } });
-        }
-
         let fileMap = new Map();
         let mediaFileStore = new Map();
         let rootFolderName = 'Takeout';
+        let pendingAction = null; // For modal
+
+        // --- Core App Logic ---
+        function resetApp() {
+            uploadSection.classList.remove('hidden');
+            resultsSection.classList.add('hidden');
+            logAccordion.classList.add('hidden'); 
+            logAccordion.classList.remove('accordion-open');
+            logToggle.querySelector('span').textContent = 'Show Processing Log';
+            headerResetBtn.classList.add('hidden');
+            fileInput.value = '';
+            fileMap.clear();
+            mediaFileStore.clear();
+        }
 
         async function handleFiles(event) {
             const files = event.target.files;
             if (files.length === 0) return;
 
+            resetApp(); // Clear previous results
             uploadSection.classList.add('hidden');
-            resultsSection.classList.add('hidden');
             logAccordion.classList.remove('hidden');
             headerResetBtn.classList.remove('hidden'); // Show Start Over
             if (!logAccordion.classList.contains('accordion-open')) {
@@ -423,8 +345,6 @@
             downloadButtons.innerHTML = '';
             log('Starting analysis of your Takeout folder...');
 
-            fileMap.clear();
-            mediaFileStore.clear();
             let mediaFiles = [];
             let jsonFiles = [];
             let totalSize = 0;
@@ -446,7 +366,7 @@
 
             if (totalSize > FIVE_GB) {
                 log('ERROR: Total folder size is > 5GB. Please use the Desktop App.', 'error');
-                alert("Your folder is over 5GB. Please use the Desktop App for unlimited size.");
+                alert("Your folder is over 5GB. Please use the Desktop App for unlimited size and permanent fixes.");
                 resetApp(); // Auto-reset on error
                 return;
             }
@@ -516,31 +436,23 @@
         function displayDownloadButtons(folderMap) {
             resultsSection.classList.remove('hidden');
             
-            // 1. Create MASTER download button first
             const masterBtn = createDownloadButton(`${rootFolderName}-Fixed.zip`, `Download All Folders (${mediaFileStore.size} files)`, true);
             masterBtn.onclick = () => showDownloadModal(() => downloadFolder(folderMap, `${rootFolderName}-Fixed.zip`, masterBtn));
             downloadButtons.appendChild(masterBtn);
 
-            // If there's only one folder (e.g. 'root' or just one year), don't show subsets
             if (folderMap.size <= 1) return;
 
-            // 2. Create Separator
             const separator = document.createElement('div');
             separator.className = "flex items-center py-4";
             separator.innerHTML = '<div class="flex-grow h-px bg-gray-700"></div><span class="flex-shrink-0 text-gray-500 px-4 text-sm font-medium">OR DOWNLOAD INDIVIDUALLY</span><div class="flex-grow h-px bg-gray-700"></div>';
             downloadButtons.appendChild(separator);
 
-            // 3. Create SUBSET buttons
-            // Sort folders by name (usually years, so reverse sort is nice)
             const sortedFolders = Array.from(folderMap.keys()).sort().reverse();
-
             for (const folderName of sortedFolders) {
                 if (folderName === 'root' && folderMap.size > 1 && folderMap.get('root').length === 0) continue;
-
                 const files = folderMap.get(folderName);
                 const btn = createDownloadButton(`${folderName}.zip`, `Download ${folderName} (${files.length} files)`, false);
                 const singleFolderMap = new Map([[folderName, files]]);
-                // Hook up to modal
                 btn.onclick = () => showDownloadModal(() => downloadFolder(singleFolderMap, `${folderName}.zip`, btn));
                 downloadButtons.appendChild(btn);
             }
@@ -548,7 +460,6 @@
 
         function createDownloadButton(fileName, text, isMaster) {
             const btn = document.createElement('button');
-            // Master button gets primary green, subsets get a slightly different shade/style if desired, currently sharing same base green
             btn.className = `w-full flex items-center justify-center px-6 py-4 ${isMaster ? 'bg-green-600 hover:bg-green-500 text-white font-bold text-lg' : 'bg-green-600/80 hover:bg-green-500/80 text-white font-semibold'} rounded-xl transition shadow-lg`;
             btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> ${text}`;
             return btn;
@@ -565,17 +476,13 @@
                 for (const fileData of files) {
                     const originalFile = mediaFileStore.get(fileData.path);
                     if (originalFile) {
-                        // Smart pathing: If it's a skipped file, put it in _SKIPPED subfolder
                         let zipPath = originalFile.webkitRelativePath.substring(originalFile.webkitRelativePath.indexOf('/') + 1);
                         if (fileData.skipped) {
                              const pathParts = zipPath.split('/');
                              const fileName = pathParts.pop();
-                             // Insert _SKIPPED before filename. e.g., 2024/_SKIPPED/photo.jpg
                              zipPath = [...pathParts, '_SKIPPED', fileName].join('/');
                         }
-
                         if (zipPath) {
-                            // Use original date for skipped, new date for fixed
                             const dateToUse = fileData.skipped ? new Date(originalFile.lastModified) : new Date(fileData.newDate);
                             zip.file(zipPath, originalFile, { date: dateToUse, binary: true });
                         }
@@ -601,6 +508,7 @@
             }
         }
 
+        // --- Utils & Event Handlers ---
         function log(message, type = 'info') {
             const p = document.createElement('p');
             let color = 'text-gray-400';
@@ -627,6 +535,104 @@
             }
             return null;
         }
+
+        // --- Modal Logic ---
+        function showDownloadModal(action) {
+            pendingAction = action;
+            downloadModal.classList.remove('hidden');
+        }
+        function hideDownloadModal() {
+            downloadModal.classList.add('hidden');
+            pendingAction = null;
+        }
+        modalCloseBtn.addEventListener('click', hideDownloadModal);
+        donateDownloadBtn.addEventListener('click', () => {
+            window.open('https://buymeacoffee.com/Being_Glad', '_blank');
+            if (pendingAction) pendingAction();
+            hideDownloadModal();
+        });
+        justDownloadBtn.addEventListener('click', () => {
+            if (pendingAction) pendingAction();
+            hideDownloadModal();
+        });
+
+        // --- Initial Setup ---
+        // Logo refresh
+        logoLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetApp();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        headerResetBtn.addEventListener('click', resetApp);
+        
+        // FAQ Toggles
+        document.querySelectorAll('.faq-toggle').forEach(button => {
+            button.addEventListener('click', () => {
+                const content = button.nextElementSibling;
+                content.classList.toggle('hidden');
+                button.querySelector('svg').classList.toggle('rotate-180');
+            });
+        });
+
+        // Log Toggle
+        logToggle.addEventListener('click', () => {
+            logAccordion.classList.toggle('accordion-open');
+            logToggle.querySelector('span').textContent = logAccordion.classList.contains('accordion-open') ? 'Hide Processing Log' : 'Show Processing Log';
+        });
+
+        // Drag/Drop Handlers
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => uploadSection.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false));
+        ['dragenter', 'dragover'].forEach(eventName => uploadSection.addEventListener(eventName, () => uploadSection.classList.add('active'), false));
+        ['dragleave', 'drop'].forEach(eventName => uploadSection.addEventListener(eventName, () => uploadSection.classList.remove('active'), false));
+        uploadSection.addEventListener('drop', e => handleFiles({ target: { files: e.dataTransfer.files } }), false);
+        uploadSection.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFiles);
+        
+        // --- Dynamic Download Button Setup ---
+        // Fetch latest release from GitHub to populate download links
+        const repo = "Being-Glad/takeout-fixer";
+        const downloadLinksContainer = document.getElementById('download-links');
+
+        fetch(`https://api.github.com/repos/${repo}/releases/latest`)
+            .then(response => response.json())
+            .then(data => {
+                const assets = data.assets;
+                if (!assets || assets.length === 0) throw new Error('No assets found');
+                
+                const platforms = [
+                    { os: 'Windows', ext: '.exe', arch: 'x64' },
+                    { os: 'Mac (Apple)', ext: '.dmg', arch: 'arm64' },
+                    { os: 'Mac (Intel)', ext: '.dmg', arch: 'x64' },
+                    { os: 'Linux', ext: '.AppImage', arch: 'x64' }
+                ];
+
+                downloadLinksContainer.innerHTML = ''; // Clear any placeholders
+
+                platforms.forEach(p => {
+                    const asset = assets.find(a => a.name.endsWith(p.ext) && a.name.includes(p.arch));
+                    const url = asset ? asset.browser_download_url : `https://github.com/${repo}/releases/latest`;
+                    
+                    const btn = document.createElement('button');
+                    btn.className = "desktop-download-btn group flex flex-col items-center justify-center p-6 bg-gray-800 border-2 border-gray-700 rounded-2xl hover:border-indigo-500 transition w-64 h-32 cursor-pointer";
+                    btn.innerHTML = `
+                        <span class="text-gray-400 font-medium text-sm mb-2">Download for</span>
+                        <span class="text-white text-2xl font-bold group-hover:text-indigo-300 transition">${p.os}</span>
+                        ${!asset ? '<span class="text-xs text-red-400 mt-1">Build pending</span>' : ''}
+                    `;
+                    btn.addEventListener('click', () => showDownloadModal(() => window.location.href = url));
+                    downloadLinksContainer.appendChild(btn);
+                });
+            })
+            .catch(err => {
+                console.error("Failed to fetch GitHub release info:", err);
+                // Fallback buttons if API fails
+                downloadLinksContainer.innerHTML = `
+                    <a href="https://github.com/${repo}/releases/latest" target="_blank" class="w-full sm:w-auto flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10 transition">
+                        View All Releases on GitHub
+                    </a>
+                `;
+            });
+
     </script>
 </body>
 </html>

@@ -1,59 +1,66 @@
 {
-  "name": "takeout-date-fixer",
-  "productName": "Takeout Date Fixer",
-  "homepage": "https://github.com/Being-Glad/takeout-fixer",
+  "name": "photo-takeout-fixer-pro",
   "version": "1.0.0",
-  "description": "Fixes metadata and dates for Google Takeout photos and videos.",
+  "description": "Restore dates, locations, and descriptions to your Google Takeout photos.",
   "main": "main.js",
+  "author": "Being_Glad",
+  "license": "MIT",
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder"
   },
-  "keywords": [
-    "google photos",
-    "takeout",
-    "metadata",
-    "exif",
-    "fixer"
-  ],
-  "author": "Being_Glad",
-  "license": "MIT",
   "dependencies": {
-    "exiftool-vendored": "^28.3.0"
+    "archiver": "^5.3.1",
+    "electron": "^25.3.1",
+    "exiftool-vendored": "^18.4.0",
+    "fs-extra": "^11.1.1",
+    "p-limit": "^3.1.0"
   },
   "devDependencies": {
-    "electron": "^33.0.2",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^24.4.0"
   },
   "build": {
-    "appId": "com.beingglad.takeoutdatefixer",
-    "productName": "Takeout Date Fixer",
-    "artifactName": "Takeout-Date-Fixer-${arch}.${ext}",
-    "publish": null,
+    "appId": "com.beingglad.phototakeoutfixer",
+    "productName": "PhotoTakeout Fixer",
+    "artifactName": "PhotoTakeout-Fixer-${version}-${os}-${arch}.${ext}",
     "files": [
-      "**/*",
-      "build/icon.png",
-      "!**/node_modules/*/{CHANGELOG.md,README.md,README,LICENSE,LICENSE.txt}",
-      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
-      "!.editorconfig",
-      "!**/._*",
-      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,__pycache__,thumbs.db,.gitignore,.gitattributes,.flowconfig,.yarn-metadata.json,.idea,appveyor.yml,.travis.yml,circle.yml,npm-debug.log,.nyc_output,yarn.lock,.yarn-integrity,.yarn-clean}"
+      "main.js",
+      "preload.js",
+      "app.html",
+      "assets/",
+      "node_modules/"
     ],
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
     "mac": {
-      "icon": "build/icon.icns",
       "category": "public.app-category.photography",
-      "target": "dmg"
+      "icon": "build/icon.icns",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
     },
     "win": {
-      "target": "nsis",
-      "icon": "build/icon.ico"
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
     },
     "linux": {
-      "target": [
-        "AppImage"
-      ],
       "icon": "build/icon.png",
-      "category": "Utility"
+      "target": "AppImage"
     },
     "nsis": {
       "oneClick": false,

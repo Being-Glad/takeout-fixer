@@ -1,14 +1,23 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
-    // UI to Main (Actions)
+    // Actions
     openDirectory: () => ipcRenderer.invoke('dialog:openDirectory'),
-    startProcessing: (inputPaths) => ipcRenderer.send('start-processing', inputPaths),
+    startProcessing: (options) => ipcRenderer.send('start-processing', options),
     openExternal: (url) => ipcRenderer.send('open-external', url),
-    getPlatform: () => ipcRenderer.invoke('get-platform'), // Used for macOS UI fix
+    getPlatform: () => ipcRenderer.invoke('get-platform'),
 
-    // Main to UI (Listeners)
-    onProgress: (callback) => ipcRenderer.on('update-progress', (event, current, total) => callback(current, total)),
-    onLog: (callback) => ipcRenderer.on('add-log', (event, msg, type) => callback(msg, type)),
-    onComplete: (callback) => ipcRenderer.on('processing-complete', (event, stats) => callback(stats))
-}); 
+    // Listeners
+    onUpdateProgress: (callback) => {
+        ipcRenderer.removeAllListeners('update-progress');
+        ipcRenderer.on('update-progress', (event, current, total) => callback(current, total));
+    },
+    onLog: (callback) => {
+        // Don't remove listeners here so we can receive multiple log messages
+        ipcRenderer.on('add-log', (event, msg, type) => callback(msg, type));
+    },
+    onComplete: (callback) => {
+        ipcRenderer.removeAllListeners('processing-complete');
+        ipcRenderer.on('processing-complete', (event, stats) => callback(stats));
+    }
+});
