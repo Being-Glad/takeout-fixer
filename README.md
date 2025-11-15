@@ -6,21 +6,73 @@
 <rect x="25" y="55" width="50" height="20" rx="3" fill="#4f46e5"/>
 </svg>
 
-<h1 style="font-size: 3em; margin-top: 0.5em; margin-bottom: 0.2em;">PhotoTakeout Fixer</h1>
+<h1 style="font-size: 3em; margin-top: 0.5em; margin-bottom: 0.2em;">Takeout Date Fixer</h1>
 <p style="font-size: 1.25em;"><strong>Get your memories back in order.</strong></p>
 
 <p>
-<a href="https://github.com/Being-Glad/takeout-fixer/releases/latest"><img src="https://img.shields.io/github/v/release/Being-Glad/takeout-fixer?style=for-the-badge&label=Latest%20Release" alt="Latest Release"></a>
-<a href="https://github.com/Being-Glad/takeout-fixer/blob/main/LICENSE"><img src="https://www.google.com/search?q=https://img.shields.io/github/license/Being-Glad/takeout-fixer%3Fstyle%3Dfor-the-badge%26color%3Dblue" alt="License"></a>
-<a href="https://github.com/Being-Glad/takeout-fixer/issues"><img src="https://www.google.com/search?q=https://img.shields.io/github/issues/Being-Glad/takeout-fixer%3Fstyle%3Dfor-the-badge%26color%3Dgreen" alt="Issues"></a>
+<a href="https://www.google.com/search?q=https://github.com/Being-Glad/takeout-fixer/releases/latest"><img src="https://www.google.com/search?q=https://img.shields.io/github/v/release/Being-Glad/takeout-fixer%3Fstyle%3Dfor-the-badge%26label%3DLatest%2520Release" alt="Latest Release"></a>
+<a href="https://www.google.com/search?q=https://github.com/Being-Glad/takeout-fixer/blob/main/LICENSE"><img src="https://www.google.com/search?q=https://img.shields.io/github/license/Being-Glad/takeout-fixer%3Fstyle%3Dfor-the-badge%26color%3Dblue" alt="License"></a>
+<a href="https://www.google.com/search?q=https://github.com/Being-Glad/takeout-fixer/issues"><img src="https://www.google.com/search?q=https://img.shields.io/github/issues/Being-Glad/takeout-fixer%3Fstyle%3Dfor-the-badge%26color%3Dgreen" alt="Issues"></a>
 </p>
 </div>
 
-PhotoTakeout Fixer is a free, open-source app that restores dates, GPS locations, and descriptions to photos and videos downloaded from Google Takeout.
+Takeout Date Fixer is a free, open-source app that restores dates, GPS locations, and descriptions to photos and videos downloaded from Google Takeout.
 
 When you export your library from Google Photos, Google strips this critical EXIF metadata and puts it in separate .json files. This app is the solution: it reads those .json files and perfectly writes the data back into your media files.
 
 This ensures your entire photo library is perfectly organized (with correct dates, locations, and captions) when you import it into Apple Photos, Plex, or any other photo gallery.
+
+Web App vs. Desktop App (Pro)
+
+Choose the tool that's right for you. The Desktop App is the full-power "Pro" solution.
+
+Feature
+
+Web App (Quick-Fix)
+
+Desktop App (Pro)
+
+Fixes Dates
+
+✅ (File Timestamp Only)
+
+✅ (Permanent EXIF Data)
+
+Fixes GPS Locations
+
+❌
+
+✅
+
+Fixes Descriptions
+
+❌
+
+✅
+
+File Size Limit
+
+~5GB (Browser Limit)
+
+Unlimited
+
+Output Mode
+
+New .zip file
+
+Fix In-Place, New Folder, or .zip
+
+Preserves Albums
+
+✅
+
+✅
+
+_SKIPPED Folder
+
+✅
+
+✅
 
 Features
 
@@ -64,7 +116,7 @@ Web App (Quick Fix)
 
 The web app runs in your browser and is for small jobs (under 5GB). It only fixes the file timestamp for sorting; it does not write permanent EXIF data.
 
-Go to the web app.
+Go to https://being-glad.github.io/takeout-fixer/.
 
 Drag & Drop your unzipped Takeout folder.
 
@@ -78,7 +130,7 @@ Google Takeout separates metadata (date, location, description) into .json files
 
 Is it safe?
 
-Yes. It is 100% safe. All processing happens <span class="font-semibold">entirely on your device</span>. The code is open-source for transparency.
+Yes. It is 100% safe. All processing happens <span class="font-semibold">entirely on your device</span>. Your photos never leave your computer. The code is open-source for transparency.
 
 Web App vs Desktop App?
 
@@ -86,22 +138,22 @@ The Web App is for small batches (<5GB) and only fixes sorting dates. The Deskto
 
 Will this create duplicates?
 
-The Desktop App's "Fix In-Place" mode modifies files <span class="font-semibold">in-place</span>, so NO duplicates are created. The other modes create new fixed files, leaving your originals untouched.
+The Desktop App's "Fix In-Place" mode modifies files <span class="font-semibold">in-place</span>, so NO duplicates are created. The Web App and other desktop modes create new fixed files, leaving your originals untouched.
 
 Works with Apple Photos / Other Galleries?
 
-Yes! Use the Desktop App to process your files first. Then, when you import them into Apple Photos or any other gallery, they will appear in the correct chronological order with all location data and descriptions intact.
+Yes! Use the Desktop App to process your files first. Then, when you import them into Apple Photos, Google Photos, or any other gallery, they will appear in the correct chronological order with all location data and descriptions intact.
 
 How fast is it?
 
-Extremely fast. It can process thousands of photos per minute because it runs locally on your computer's full power, not on a slow server.
+Extremely fast. The desktop app can process thousands of photos per minute because it runs locally on your computer's full power, not on a slow server.
 
 ☕ Support the Project
 
 If you find this tool useful, please consider supporting its future development.
 
 <a href="https://buymeacoffee.com/Being_Glad" target="_blank">
-<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50">
+<img src="https://www.google.com/search?q=https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50">
 </a>
 
 📜 License
